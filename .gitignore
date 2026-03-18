@@ -39,3 +39,17 @@
 
 # debug information files
 *.dwo
+
+# Python cache (Flask)
+__pycache__/
+*.pyc
+
+# VS Code settings (optional)
+.vscode/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Ignore temporary logs
+*.log
