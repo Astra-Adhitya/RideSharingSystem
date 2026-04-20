@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data</title>
+</head>
+<body>
+
+<h1>Ride Data</h1>
+
+<table border="1">
+<tr>
+    <th>Passenger</th>
+    <th>Driver</th>
+    <th>Pickup</th>
+    <th>Drop</th>
+    <th>Distance</th>
+    <th>Fare</th>
+</tr>
+
+{% for ride in rides %}
+<tr>
+    <td>{{ ride[0] }}</td>
+    <td>{{ ride[1] }}</td>
+    <td>{{ ride[2] }}</td>
+    <td>{{ ride[3] }}</td>
+    <td>{{ ride[4] }}</td>
+    <td>{{ ride[5] }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+<br>
+<a href="/">Back</a>
+
+</body>
+</html>
