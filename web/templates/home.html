@@ -1,17 +1,182 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Home</title>
+    <title>Ride Dashboard</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0b0b0b;
+            color: white;
+        }
+
+        #map {
+            height: 55vh;
+            width: 100%;
+        }
+
+        .panel {
+            background: #111;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+            margin-top: -20px;
+        }
+
+        h1 {
+            padding: 10px;
+            font-size: 20px;
+        }
+
+        .status {
+            background: #1c1c1c;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            color: #00ffae;
+            font-weight: bold;
+        }
+
+        .driver-card {
+            display: flex;
+            align-items: center;
+            background: #1c1c1c;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .driver-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .driver-info {
+            flex: 1;
+        }
+
+        .driver-info h3 {
+            margin: 0;
+        }
+
+        .driver-info p {
+            margin: 2px 0;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .cards {
+            display: flex;
+            gap: 15px;
+        }
+
+        .card {
+            flex: 1;
+            background: #1c1c1c;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .title {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .value {
+            font-size: 22px;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        a {
+            color: #00d4ff;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+    </style>
 </head>
+
 <body>
 
-<h1>Ride Sharing Dashboard</h1>
+<h1>🚗 Ride Dashboard</h1>
 
-<h2>Total Rides: {{ total_rides }}</h2>
-<h2>Total Revenue: {{ total_revenue }}</h2>
+<div id="map"></div>
 
-<a href="/data">View Data</a><br>
-<a href="/stats">View Stats</a>
+<div class="panel">
+
+    <div class="status">
+        🚖 Driver has accepted your ride
+    </div>
+
+    <div class="driver-card">
+        <img src="https://randomuser.me/api/portraits/men/32.jpg">
+        <div class="driver-info">
+            <h3>Rahul Sharma ⭐ 4.8</h3>
+            <p>Car: Swift Dzire (KA 05 AB 1234)</p>
+            <p style="color:#00ffae;">🚗 Ride in progress</p>
+        </div>
+    </div>
+
+    <div class="cards">
+        <div class="card">
+            <div class="title">Active Rides</div>
+            <div class="value">{{ total_rides }}</div>
+        </div>
+
+        <div class="card">
+            <div class="title">Earnings</div>
+            <div class="value">₹ {{ total_revenue }}</div>
+        </div>
+    </div>
+
+    <div style="margin-top:15px;">
+        <a href="/data">View Data</a>
+        <a href="/stats">View Stats</a>
+    </div>
+</div>
+
+<script>
+    var map = L.map('map').setView([12.9716, 77.5946], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    var path = [
+        [12.9716, 77.5946],
+        [12.975, 77.60],
+        [12.98, 77.61],
+        [12.985, 77.62]
+    ];
+
+    L.polyline(path, {color: 'cyan'}).addTo(map);
+
+    L.marker(path[0]).addTo(map).bindPopup("Pickup").openPopup();
+    L.marker(path[path.length - 1]).addTo(map).bindPopup("Drop");
+
+    var carIcon = L.icon({
+        iconUrl: "https://cdn-icons-png.flaticon.com/512/744/744465.png",
+        iconSize: [40, 40]
+    });
+
+    var car = L.marker(path[0], {icon: carIcon}).addTo(map);
+
+    var i = 0;
+
+    setInterval(() => {
+        if (i < path.length) {
+            car.setLatLng(path[i]);
+            i++;
+        } else {
+            i = 0;
+        }
+    }, 1500);
+</script>
 
 </body>
 </html>
