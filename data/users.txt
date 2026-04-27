@@ -287,5 +287,33 @@
         "role": "driver",
         "vehicle": "Mazda 3",
         "available": true
+    },
+    {
+        "id": "d1",
+        "name": "driver",
+        "phone": "1234578",
+        "role": "driver",
+        "vehicle": "Car",
+        "available": true
+    },
+    {
+        "id": "admin",
+        "name": "admin",
+        "phone": "1234578",
+        "role": "admin"
+    },
+    {
+        "id": "arjun_01",
+        "name": "Arjun Sharma",
+        "phone": "555-9901",
+        "role": "rider"
+    },
+    {
+        "id": "priya_01",
+        "name": "Priya Patel",
+        "phone": "555-9902",
+        "role": "driver",
+        "vehicle": "Maruti Swift Dzire",
+        "available": true
     }
 ]

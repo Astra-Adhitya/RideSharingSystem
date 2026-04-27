@@ -109,7 +109,7 @@ class Handler(BaseHTTPRequestHandler):
                 rider_spent[r.get("riderId")] = rider_spent.get(r.get("riderId"), 0) + r.get("fare", 0)
                 
             riders  = [{"id": u["id"], "name": u["name"], "spent": round(rider_spent.get(u["id"], 0), 2)} for u in users if u.get("role") == "rider"]
-            drivers = [{"id": u["id"], "name": u["name"], "vehicle": u.get("vehicle", ""), "earned": round(driver_earnings.get(u["id"], 0), 2)} for u in users if u.get("role") == "driver"]
+            drivers = [{"id": u["id"], "name": u["name"], "vehicle": u.get("vehicle", ""), "earned": round(driver_earnings.get(u["id"], 0), 2), "available": u.get("available", True)} for u in users if u.get("role") == "driver"]
             total_income = round(sum(r.get("fare", 0) for r in rides), 2)
             self.send_json(200, {
                 "riders":      riders,
@@ -212,6 +212,27 @@ class Handler(BaseHTTPRequestHandler):
                 
             save_json(USERS_FILE, new_users)
             self.send_json(200, {"success": True, "message": "User removed successfully."})
+
+        elif path == "/api/toggleAvailability":
+            data = self.read_body()
+            uid = data.get("userId", "").strip()
+            if not uid:
+                self.send_json(400, {"success": False, "message": "No user ID provided."})
+                return
+            users = load_json(USERS_FILE, [])
+            found = False
+            new_available = False
+            for u in users:
+                if u["id"] == uid and u.get("role") == "driver":
+                    u["available"] = not u.get("available", True)
+                    new_available = u["available"]
+                    found = True
+                    break
+            if not found:
+                self.send_json(404, {"success": False, "message": "Driver not found."})
+                return
+            save_json(USERS_FILE, users)
+            self.send_json(200, {"success": True, "available": new_available})
 
         else:
             self.send_json(404, {"error": "Not found"})

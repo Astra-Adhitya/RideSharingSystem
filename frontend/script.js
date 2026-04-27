@@ -4,6 +4,36 @@ let riderChartInstance = null;
 let driverChartInstance = null;
 let adminChartInstance = null;
 
+// ===== FLOATING PARTICLES =====
+(function createParticles() {
+    const container = document.getElementById('particles');
+    if(!container) return;
+    for(let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (8 + Math.random() * 18) + 's';
+        p.style.animationDelay = (Math.random() * 12) + 's';
+        p.style.opacity = (0.2 + Math.random() * 0.5);
+        container.appendChild(p);
+    }
+})();
+
+// ===== ANIMATED COUNTER =====
+function animateValue(el, start, end, duration) {
+    const isINR = el.innerText.includes('₹');
+    let startTime = null;
+    function step(ts) {
+        if(!startTime) startTime = ts;
+        const progress = Math.min((ts - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = start + (end - start) * eased;
+        el.innerText = isINR ? `₹${current.toFixed(2)}` : Math.round(current);
+        if(progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+}
+
 function toggleAuth(tab) {
     document.getElementById('btn-login-tab').classList.remove('active');
     document.getElementById('btn-register-tab').classList.remove('active');
@@ -49,6 +79,41 @@ function toggleDriverTab(tab) {
     } else {
         document.getElementById('driver-status-section').style.display = 'none';
         document.getElementById('driver-history-section').style.display = 'block';
+    }
+}
+
+async function toggleDriverAvailability() {
+    const toggle = document.getElementById('driver-toggle');
+    const label = document.getElementById('driver-status-label');
+    const heading = document.getElementById('driver-status-heading');
+    const desc = document.getElementById('driver-status-desc');
+    
+    try {
+        const res = await fetch('/api/toggleAvailability', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({userId: currentUserId})
+        });
+        const data = await res.json();
+        if(data.success) {
+            const isOnline = data.available;
+            toggle.checked = isOnline;
+            if(isOnline) {
+                label.className = 'status-online';
+                label.innerText = 'Online & Available';
+                heading.innerText = 'You are currently online.';
+                desc.innerText = 'Riders can see your vehicle details and book you for a ride. Stay available to earn more!';
+            } else {
+                label.className = '';
+                label.style.cssText = 'color:#94a3b8; font-size:14px;';
+                label.innerText = 'Offline';
+                heading.innerText = 'You are currently offline.';
+                desc.innerText = 'Riders cannot see or book you. Toggle the switch to go back online.';
+            }
+        }
+    } catch(e) {
+        console.error(e);
+        toggle.checked = !toggle.checked;
     }
 }
 
@@ -111,7 +176,18 @@ function showDashboard() {
     document.querySelector('.container').classList.add('dashboard-mode');
     document.getElementById('auth-section').style.display = 'none';
     document.getElementById('dashboard-section').style.display = 'block';
-    document.getElementById('user-greeting').innerText = `Hello, ${currentUserId} (${currentUserRole})`;
+    
+    const roleEmoji = currentUserRole === 'rider' ? '🚗' : currentUserRole === 'driver' ? '🏎️' : '⚡';
+    const roleColors = {
+        rider: { bg: 'rgba(245, 158, 11, 0.12)', border: 'rgba(245, 158, 11, 0.3)', text: '#fbbf24' },
+        driver: { bg: 'rgba(34, 197, 94, 0.12)', border: 'rgba(34, 197, 94, 0.3)', text: '#4ade80' },
+        admin: { bg: 'rgba(13, 148, 136, 0.12)', border: 'rgba(13, 148, 136, 0.3)', text: '#5eead4' }
+    };
+    const rc = roleColors[currentUserRole] || roleColors.rider;
+    document.getElementById('user-greeting').innerHTML = `
+        ${roleEmoji} Welcome, <span style="background: linear-gradient(135deg, #fff, var(--primary-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${currentUserId}</span>
+        <span style="display:inline-flex; align-items:center; margin-left:10px; padding:4px 12px; background:${rc.bg}; border:1px solid ${rc.border}; border-radius:100px; font-size:12px; color:${rc.text}; font-weight:600; letter-spacing:0.5px; -webkit-text-fill-color:${rc.text};">${currentUserRole.toUpperCase()}</span>
+    `;
 
     if(currentUserRole === 'rider') {
         document.getElementById('rider-view').style.display = 'block';
@@ -323,19 +399,27 @@ async function fetchAdminStats() {
             const div = document.createElement('div');
             div.className = 'card';
             div.style.padding = '10px';
+            const statusClass = d.available ? 'online' : 'offline';
+            const statusText = d.available ? 'Online' : 'Offline';
             div.innerHTML = `
                 <div class="card-info" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
-                    <h4 style="font-size:14px; margin-bottom:0;">${d.name} <br><span style="font-size:11px; color:#94a3b8; font-weight:normal;">${d.vehicle}</span></h4>
+                    <h4 style="font-size:14px; margin-bottom:0;"><span class="status-dot ${statusClass}"></span>${d.name} <br><span style="font-size:11px; color:#94a3b8; font-weight:normal;">${d.vehicle} • ${statusText}</span></h4>
                     <div style="display:flex; align-items:center; gap: 10px;">
-                        <span style="color:#a3e635; font-size:13px; font-weight:bold;">₹${d.earned.toFixed(2)} earned</span>
+                        <span style="color:#a3e635; font-size:13px; font-weight:bold;">₹${d.earned.toFixed(2)}</span>
                         <button onclick="removeUser('${d.id}')" class="remove-btn">Remove</button>
                     </div>
                 </div>`;
             driversContainer.appendChild(div);
         });
 
-        document.getElementById('admin-rider-count').innerText = `(${data.riders.length})`;
-        document.getElementById('admin-driver-count').innerText = `(${data.drivers.length})`;
+        document.getElementById('admin-rider-count').innerText = data.riders.length;
+        document.getElementById('admin-driver-count').innerText = data.drivers.length;
+
+        // Animate the stat values
+        const incomeEl = document.getElementById('admin-income');
+        const ridesEl = document.getElementById('admin-rides');
+        animateValue(incomeEl, 0, data.totalIncome, 800);
+        animateValue(ridesEl, 0, data.totalRides, 800);
 
         const driversWithEarnings = data.drivers.filter(d => d.earned > 0).sort((a, b) => b.earned - a.earned);
         const topDrivers = driversWithEarnings.slice(0, 12);
