@@ -5,5 +5,287 @@
         "name": "admin",
         "phone": "admin",
         "role": "admin"
+    },
+    {
+        "id": "r1",
+        "name": "rider",
+        "phone": "001",
+        "role": "rider"
+    },
+    {
+        "id": "testadmin",
+        "name": "Test Admin",
+        "phone": "1234567890",
+        "role": "admin"
+    },
+    {
+        "id": "rider_100",
+        "name": "Mock Rider 1",
+        "phone": "555-0100",
+        "role": "rider"
+    },
+    {
+        "id": "rider_101",
+        "name": "Mock Rider 2",
+        "phone": "555-0101",
+        "role": "rider"
+    },
+    {
+        "id": "rider_102",
+        "name": "Mock Rider 3",
+        "phone": "555-0102",
+        "role": "rider"
+    },
+    {
+        "id": "rider_103",
+        "name": "Mock Rider 4",
+        "phone": "555-0103",
+        "role": "rider"
+    },
+    {
+        "id": "rider_104",
+        "name": "Mock Rider 5",
+        "phone": "555-0104",
+        "role": "rider"
+    },
+    {
+        "id": "driver_100",
+        "name": "Mock Driver 1",
+        "phone": "555-0200",
+        "role": "driver",
+        "vehicle": "Toyota Prius",
+        "available": false
+    },
+    {
+        "id": "driver_101",
+        "name": "Mock Driver 2",
+        "phone": "555-0201",
+        "role": "driver",
+        "vehicle": "Honda Civic",
+        "available": true
+    },
+    {
+        "id": "driver_102",
+        "name": "Mock Driver 3",
+        "phone": "555-0202",
+        "role": "driver",
+        "vehicle": "Ford Fusion",
+        "available": true
+    },
+    {
+        "id": "driver_103",
+        "name": "Mock Driver 4",
+        "phone": "555-0203",
+        "role": "driver",
+        "vehicle": "Hyundai Elantra",
+        "available": true
+    },
+    {
+        "id": "driver_104",
+        "name": "Mock Driver 5",
+        "phone": "555-0204",
+        "role": "driver",
+        "vehicle": "Chevy Malibu",
+        "available": true
+    },
+    {
+        "id": "rider_300",
+        "name": "Mock Rider 300",
+        "phone": "555-0300",
+        "role": "rider"
+    },
+    {
+        "id": "rider_301",
+        "name": "Mock Rider 301",
+        "phone": "555-0301",
+        "role": "rider"
+    },
+    {
+        "id": "rider_302",
+        "name": "Mock Rider 302",
+        "phone": "555-0302",
+        "role": "rider"
+    },
+    {
+        "id": "rider_303",
+        "name": "Mock Rider 303",
+        "phone": "555-0303",
+        "role": "rider"
+    },
+    {
+        "id": "rider_304",
+        "name": "Mock Rider 304",
+        "phone": "555-0304",
+        "role": "rider"
+    },
+    {
+        "id": "rider_305",
+        "name": "Mock Rider 305",
+        "phone": "555-0305",
+        "role": "rider"
+    },
+    {
+        "id": "rider_306",
+        "name": "Mock Rider 306",
+        "phone": "555-0306",
+        "role": "rider"
+    },
+    {
+        "id": "rider_307",
+        "name": "Mock Rider 307",
+        "phone": "555-0307",
+        "role": "rider"
+    },
+    {
+        "id": "rider_308",
+        "name": "Mock Rider 308",
+        "phone": "555-0308",
+        "role": "rider"
+    },
+    {
+        "id": "rider_309",
+        "name": "Mock Rider 309",
+        "phone": "555-0309",
+        "role": "rider"
+    },
+    {
+        "id": "rider_310",
+        "name": "Mock Rider 310",
+        "phone": "555-03010",
+        "role": "rider"
+    },
+    {
+        "id": "rider_311",
+        "name": "Mock Rider 311",
+        "phone": "555-03011",
+        "role": "rider"
+    },
+    {
+        "id": "rider_312",
+        "name": "Mock Rider 312",
+        "phone": "555-03012",
+        "role": "rider"
+    },
+    {
+        "id": "rider_313",
+        "name": "Mock Rider 313",
+        "phone": "555-03013",
+        "role": "rider"
+    },
+    {
+        "id": "rider_314",
+        "name": "Mock Rider 314",
+        "phone": "555-03014",
+        "role": "rider"
+    },
+    {
+        "id": "rider_315",
+        "name": "Mock Rider 315",
+        "phone": "555-03015",
+        "role": "rider"
+    },
+    {
+        "id": "rider_316",
+        "name": "Mock Rider 316",
+        "phone": "555-03016",
+        "role": "rider"
+    },
+    {
+        "id": "rider_317",
+        "name": "Mock Rider 317",
+        "phone": "555-03017",
+        "role": "rider"
+    },
+    {
+        "id": "rider_318",
+        "name": "Mock Rider 318",
+        "phone": "555-03018",
+        "role": "rider"
+    },
+    {
+        "id": "rider_319",
+        "name": "Mock Rider 319",
+        "phone": "555-03019",
+        "role": "rider"
+    },
+    {
+        "id": "driver_300",
+        "name": "Mock Driver 300",
+        "phone": "555-0400",
+        "role": "driver",
+        "vehicle": "Toyota Prius",
+        "available": true
+    },
+    {
+        "id": "driver_301",
+        "name": "Mock Driver 301",
+        "phone": "555-0401",
+        "role": "driver",
+        "vehicle": "Honda Civic",
+        "available": true
+    },
+    {
+        "id": "driver_302",
+        "name": "Mock Driver 302",
+        "phone": "555-0402",
+        "role": "driver",
+        "vehicle": "Ford Fusion",
+        "available": true
+    },
+    {
+        "id": "driver_303",
+        "name": "Mock Driver 303",
+        "phone": "555-0403",
+        "role": "driver",
+        "vehicle": "Hyundai Elantra",
+        "available": true
+    },
+    {
+        "id": "driver_304",
+        "name": "Mock Driver 304",
+        "phone": "555-0404",
+        "role": "driver",
+        "vehicle": "Chevy Malibu",
+        "available": true
+    },
+    {
+        "id": "driver_305",
+        "name": "Mock Driver 305",
+        "phone": "555-0405",
+        "role": "driver",
+        "vehicle": "Nissan Altima",
+        "available": false
+    },
+    {
+        "id": "driver_306",
+        "name": "Mock Driver 306",
+        "phone": "555-0406",
+        "role": "driver",
+        "vehicle": "VW Jetta",
+        "available": true
+    },
+    {
+        "id": "driver_307",
+        "name": "Mock Driver 307",
+        "phone": "555-0407",
+        "role": "driver",
+        "vehicle": "Kia Optima",
+        "available": false
+    },
+    {
+        "id": "driver_308",
+        "name": "Mock Driver 308",
+        "phone": "555-0408",
+        "role": "driver",
+        "vehicle": "Subaru Legacy",
+        "available": false
+    },
+    {
+        "id": "driver_309",
+        "name": "Mock Driver 309",
+        "phone": "555-0409",
+        "role": "driver",
+        "vehicle": "Mazda 3",
+        "available": true
     }
 ]

@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Astra Rides</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>MINI RIDE SHARING SYSTEM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="background-animation"></div>
     <div class="container">
         <!-- Auth Section -->
         <section id="auth-section" class="glass-panel active">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <img src="logo.png" alt="Mini Ride Sharing Logo" style="width: 80px; height: 80px; margin-bottom: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);">
+                <h1 style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 26px; background: linear-gradient(to right, #a855f7, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; margin-bottom: 5px;">MINI RIDE SHARING SYSTEM</h1>
+                <p style="color: #94a3b8; font-size: 14px;">Log in or create an account to get started.</p>
+            </div>
+            
             <div class="toggle-btns">
                 <button id="btn-login-tab" class="active" onclick="toggleAuth('login')">Login</button>
                 <button id="btn-register-tab" onclick="toggleAuth('register')">Register</button>
@@ -47,56 +54,152 @@
             </header>
 
             <div id="rider-view" style="display:none;">
-                <h3>Book a Ride</h3>
-                <div class="form-group" style="margin-top: 15px;">
-                    <input type="text" id="pickup" placeholder="Pickup Location">
-                    <input type="text" id="drop" placeholder="Drop Location">
-                    <input type="number" id="distance" placeholder="Distance (km)">
+                <h3 style="margin-bottom: 20px;">Rider Dashboard</h3>
+                <div style="display:flex; justify-content:space-between; align-items: stretch;">
+                    <!-- Left side: Tabs for Booking and History -->
+                    <div style="width:72%; display:flex; flex-direction:column;">
+                        <div class="toggle-btns" style="margin-bottom: 20px;">
+                            <button id="btn-rider-book-tab" class="active" onclick="toggleRiderTab('book')">Book a Ride</button>
+                            <button id="btn-rider-history-tab" onclick="toggleRiderTab('history')">Previous Rides</button>
+                        </div>
+                        
+                        <!-- Book Ride Tab -->
+                        <div id="rider-book-section">
+                            <div class="form-group">
+                                <input type="text" id="pickup" placeholder="Pickup Location">
+                                <input type="text" id="drop" placeholder="Drop Location">
+                                <input type="number" id="distance" placeholder="Distance (km)">
+                            </div>
+                            <button class="primary-btn" onclick="fetchDrivers()">Find Available Drivers</button>
+                            <div id="drivers-list" class="list-container" style="max-height: 250px;"></div>
+                        </div>
+
+                        <!-- History Tab -->
+                        <div id="rider-history-section" style="display:none;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h4 style="margin-bottom:0;">Ride History</h4>
+                                <button class="secondary-btn" onclick="fetchHistory()">Refresh</button>
+                            </div>
+                            <div id="rider-history-list" class="list-container" style="max-height: 250px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Right side: Profile & Pie chart -->
+                    <div style="width:26%; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; background:rgba(0,0,0,0.1); border-radius:16px; padding:25px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="width: 100%; max-width: 250px; margin-bottom: 30px;">
+                            <canvas id="riderPieChart"></canvas>
+                        </div>
+                        <div style="width: 100%; display:flex; justify-content:space-between;">
+                            <div class="card" style="width: 48%; margin-bottom:0;">
+                                <div class="card-info" style="text-align:center;">
+                                    <h4 style="font-size:14px; margin-bottom:8px;">Total Spent</h4>
+                                    <p id="rider-total-spent" style="color:#a3e635; font-size:18px; font-weight:bold;">₹0.00</p>
+                                </div>
+                            </div>
+                            <div class="card" style="width: 48%; margin-bottom:0;">
+                                <div class="card-info" style="text-align:center;">
+                                    <h4 style="font-size:14px; margin-bottom:8px;">Total Rides</h4>
+                                    <p id="rider-total-rides" style="font-size:18px; font-weight:bold;">0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <button class="primary-btn" onclick="fetchDrivers()">Find Available Drivers</button>
-                <div id="drivers-list" class="list-container"></div>
             </div>
 
-            <div id="driver-view" style="display:none; text-align: center;">
-                <h3>Driver Dashboard</h3>
-                <p style="margin-top:15px; color:#94a3b8;">Wait for riders to book you.</p>
-                <p style="margin-top:5px;">Currently you show as available by default.</p>
+            <div id="driver-view" style="display:none;">
+                <h3 style="margin-bottom: 20px;">Driver Dashboard</h3>
+                <div style="display:flex; justify-content:space-between; align-items: stretch;">
+                    <!-- Left side: Tabs for Status and History -->
+                    <div style="width:72%; display:flex; flex-direction:column;">
+                        <div class="toggle-btns" style="margin-bottom: 20px;">
+                            <button id="btn-driver-status-tab" class="active" onclick="toggleDriverTab('status')">Current Status</button>
+                            <button id="btn-driver-history-tab" onclick="toggleDriverTab('history')">Previous Rides</button>
+                        </div>
+                        
+                        <!-- Status Tab -->
+                        <div id="driver-status-section" style="text-align: center; margin-top: 30px;">
+                            <h4 style="font-size:18px; color: #f8fafc;">You are currently online.</h4>
+                            <p style="margin-top:15px; color:#94a3b8;">Wait for riders to book you.</p>
+                            <p style="margin-top:5px; color:#94a3b8;">Your vehicle details are visible to riders.</p>
+                        </div>
+
+                        <!-- History Tab -->
+                        <div id="driver-history-section" style="display:none;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h4 style="margin-bottom:0;">Ride History</h4>
+                                <button class="secondary-btn" onclick="fetchHistory()">Refresh</button>
+                            </div>
+                            <div id="driver-history-list" class="list-container" style="max-height: 250px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Right side: Profile & Pie chart -->
+                    <div style="width:26%; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; background:rgba(0,0,0,0.1); border-radius:16px; padding:25px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="width: 100%; max-width: 250px; margin-bottom: 30px;">
+                            <canvas id="driverPieChart"></canvas>
+                        </div>
+                        <div style="width: 100%; display:flex; justify-content:space-between;">
+                            <div class="card" style="width: 48%; margin-bottom:0;">
+                                <div class="card-info" style="text-align:center;">
+                                    <h4 style="font-size:14px; margin-bottom:8px;">Total Earned</h4>
+                                    <p id="driver-total-earned" style="color:#a3e635; font-size:18px; font-weight:bold;">₹0.00</p>
+                                </div>
+                            </div>
+                            <div class="card" style="width: 48%; margin-bottom:0;">
+                                <div class="card-info" style="text-align:center;">
+                                    <h4 style="font-size:14px; margin-bottom:8px;">Total Rides</h4>
+                                    <p id="driver-total-rides" style="font-size:18px; font-weight:bold;">0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="admin-view" style="display:none;">
-                <h3>Admin Portal</h3>
-                <div class="card" style="margin-top:15px;">
-                    <div class="card-info">
-                        <h4>Total Income</h4>
-                        <p id="admin-income" style="color:#a3e635; font-size:18px; font-weight:bold;">$0.00</p>
-                    </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 0;">Admin Portal</h3>
+                    <button id="btn-manage-users" class="secondary-btn" style="border-color:rgba(239,68,68,0.5); color:#ef4444;" onclick="toggleRemoveMode()">Manage Users</button>
                 </div>
-                <div class="card">
-                    <div class="card-info">
-                        <h4>Total Rides Completed</h4>
-                        <p id="admin-rides">0</p>
+
+                <div style="display:flex; justify-content:space-between; align-items: stretch;">
+                    <!-- Left side: Riders & Drivers -->
+                    <div style="width:72%; display:flex; justify-content:space-between;">
+                        <div style="width:48%;">
+                            <h4>Drivers List <span id="admin-driver-count" style="font-size:12px; color:#94a3b8; font-weight:normal;">(0)</span></h4>
+                            <div id="admin-drivers-list" class="list-container" style="max-height:400px;"></div>
+                        </div>
+                        <div style="width:48%;">
+                            <h4>Riders List <span id="admin-rider-count" style="font-size:12px; color:#94a3b8; font-weight:normal;">(0)</span></h4>
+                            <div id="admin-riders-list" class="list-container" style="max-height:400px;"></div>
+                        </div>
                     </div>
-                </div>
-                <button class="primary-btn" onclick="fetchAdminStats()">Refresh Stats</button>
-                <div style="display:flex; justify-content:space-between; margin-top:20px;">
-                    <div style="width:48%;">
-                        <h4>Riders</h4>
-                        <div id="admin-riders-list" class="list-container" style="max-height:150px;"></div>
-                    </div>
-                    <div style="width:48%;">
-                        <h4>Drivers</h4>
-                        <div id="admin-drivers-list" class="list-container" style="max-height:150px;"></div>
+                    
+                    <!-- Right side: Pie chart & Stats -->
+                    <div style="width:26%; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; background:rgba(0,0,0,0.1); border-radius:16px; padding:25px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="width: 100%; max-width: 250px; margin-bottom: 30px;">
+                            <canvas id="adminPieChart"></canvas>
+                        </div>
+                        <div style="width: 100%; display:flex; justify-content:space-between;">
+                            <div class="card" style="width: 48%; margin-bottom:0;">
+                                <div class="card-info" style="text-align:center;">
+                                    <h4 style="font-size:14px; margin-bottom:8px;">Total Income</h4>
+                                    <p id="admin-income" style="color:#a3e635; font-size:18px; font-weight:bold;">₹0.00</p>
+                                </div>
+                            </div>
+                            <div class="card" style="width: 48%; margin-bottom:0;">
+                                <div class="card-info" style="text-align:center;">
+                                    <h4 style="font-size:14px; margin-bottom:8px;">Completed Rides</h4>
+                                    <p id="admin-rides" style="font-size:18px; font-weight:bold;">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="primary-btn" style="margin-top:25px; width: 100%; padding: 12px;" onclick="fetchAdminStats()">Refresh Stats</button>
                     </div>
                 </div>
             </div>
 
-            <div id="history-wrapper" class="history-section" style="margin-top: 30px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h3>Ride History</h3>
-                    <button class="secondary-btn" onclick="fetchHistory()">Refresh</button>
-                </div>
-                <div id="history-list" class="list-container"></div>
-            </div>
         </section>
     </div>
 

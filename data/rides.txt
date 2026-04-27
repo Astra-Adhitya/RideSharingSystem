@@ -1,0 +1,722 @@
+[
+    {
+        "rideId": "RIDE_6B35AF8A",
+        "pickup": "hostel",
+        "drop": "UB",
+        "distance": 1.0,
+        "fare": 7.5,
+        "driverId": "AG1206",
+        "riderId": "r1"
+    },
+    {
+        "rideId": "RIDE_1B97B2AB",
+        "pickup": "Mall",
+        "drop": "Train Station",
+        "distance": 3.9,
+        "fare": 14.75,
+        "driverId": "driver_103",
+        "riderId": "rider_101"
+    },
+    {
+        "rideId": "RIDE_887D0548",
+        "pickup": "Stadium",
+        "drop": "Mall",
+        "distance": 16.7,
+        "fare": 46.75,
+        "driverId": "driver_104",
+        "riderId": "rider_103"
+    },
+    {
+        "rideId": "RIDE_5EBC6328",
+        "pickup": "Stadium",
+        "drop": "Airport",
+        "distance": 14.7,
+        "fare": 41.75,
+        "driverId": "driver_100",
+        "riderId": "rider_101"
+    },
+    {
+        "rideId": "RIDE_61F7B02B",
+        "pickup": "Airport",
+        "drop": "Downtown",
+        "distance": 11.2,
+        "fare": 33.0,
+        "driverId": "driver_104",
+        "riderId": "rider_104"
+    },
+    {
+        "rideId": "RIDE_F8324639",
+        "pickup": "Hospital",
+        "drop": "Downtown",
+        "distance": 9.8,
+        "fare": 29.5,
+        "driverId": "driver_103",
+        "riderId": "rider_100"
+    },
+    {
+        "rideId": "RIDE_EC5CE273",
+        "pickup": "Airport",
+        "drop": "Mall",
+        "distance": 17.1,
+        "fare": 47.75,
+        "driverId": "driver_104",
+        "riderId": "rider_103"
+    },
+    {
+        "rideId": "RIDE_E82078FA",
+        "pickup": "University",
+        "drop": "Tech Park",
+        "distance": 7.0,
+        "fare": 22.5,
+        "driverId": "driver_101",
+        "riderId": "rider_102"
+    },
+    {
+        "rideId": "RIDE_898EB2F0",
+        "pickup": "University",
+        "drop": "Airport",
+        "distance": 3.0,
+        "fare": 12.5,
+        "driverId": "driver_104",
+        "riderId": "rider_104"
+    },
+    {
+        "rideId": "RIDE_8B0CB076",
+        "pickup": "University",
+        "drop": "Airport",
+        "distance": 9.3,
+        "fare": 28.25,
+        "driverId": "driver_104",
+        "riderId": "rider_100"
+    },
+    {
+        "rideId": "RIDE_5EB552C5",
+        "pickup": "University",
+        "drop": "Tech Park",
+        "distance": 5.3,
+        "fare": 18.25,
+        "driverId": "driver_104",
+        "riderId": "rider_100"
+    },
+    {
+        "rideId": "RIDE_20708727",
+        "pickup": "Train Station",
+        "drop": "Downtown",
+        "distance": 2.5,
+        "fare": 11.25,
+        "driverId": "driver_104",
+        "riderId": "rider_102"
+    },
+    {
+        "rideId": "RIDE_4B62A44F",
+        "pickup": "Airport",
+        "drop": "Stadium",
+        "distance": 13.0,
+        "fare": 37.5,
+        "driverId": "driver_102",
+        "riderId": "rider_102"
+    },
+    {
+        "rideId": "RIDE_6CF77728",
+        "pickup": "University",
+        "drop": "Hospital",
+        "distance": 16.5,
+        "fare": 46.25,
+        "driverId": "driver_101",
+        "riderId": "rider_100"
+    },
+    {
+        "rideId": "RIDE_7CE066C1",
+        "pickup": "Tech Park",
+        "drop": "Stadium",
+        "distance": 2.8,
+        "fare": 12.0,
+        "driverId": "driver_104",
+        "riderId": "rider_100"
+    },
+    {
+        "rideId": "RIDE_9DA83983",
+        "pickup": "University",
+        "drop": "Airport",
+        "distance": 4.4,
+        "fare": 16.0,
+        "driverId": "driver_102",
+        "riderId": "rider_101"
+    },
+    {
+        "rideId": "RIDE_FD8EEF5A",
+        "pickup": "Tech Park",
+        "drop": "University",
+        "distance": 14.4,
+        "fare": 41.0,
+        "driverId": "driver_103",
+        "riderId": "rider_103"
+    },
+    {
+        "rideId": "RIDE_F4558A2F",
+        "pickup": "University",
+        "drop": "Downtown",
+        "distance": 4.0,
+        "fare": 15.0,
+        "driverId": "driver_103",
+        "riderId": "rider_102"
+    },
+    {
+        "rideId": "RIDE_93E53AE9",
+        "pickup": "Tech Park",
+        "drop": "Downtown",
+        "distance": 4.6,
+        "fare": 16.5,
+        "driverId": "driver_104",
+        "riderId": "rider_104"
+    },
+    {
+        "rideId": "RIDE_5B940859",
+        "pickup": "Tech Park",
+        "drop": "Train Station",
+        "distance": 14.0,
+        "fare": 40.0,
+        "driverId": "driver_104",
+        "riderId": "rider_102"
+    },
+    {
+        "rideId": "RIDE_BBDEFA7B",
+        "pickup": "Tech Park",
+        "drop": "Airport",
+        "distance": 18.5,
+        "fare": 51.25,
+        "driverId": "driver_100",
+        "riderId": "rider_102"
+    },
+    {
+        "rideId": "RIDE_802595D8",
+        "pickup": "Downtown",
+        "drop": "Airport",
+        "distance": 8.1,
+        "fare": 25.25,
+        "driverId": "driver_101",
+        "riderId": "rider_101"
+    },
+    {
+        "rideId": "RIDE_49BED9EB",
+        "pickup": "University",
+        "drop": "Mall",
+        "distance": 11.8,
+        "fare": 34.5,
+        "driverId": "driver_103",
+        "riderId": "rider_101"
+    },
+    {
+        "rideId": "RIDE_F1B962D5",
+        "pickup": "Stadium",
+        "drop": "Mall",
+        "distance": 2.3,
+        "fare": 10.75,
+        "driverId": "driver_104",
+        "riderId": "rider_100"
+    },
+    {
+        "rideId": "RIDE_0541CB8F",
+        "pickup": "Mall",
+        "drop": "Airport",
+        "distance": 2.4,
+        "fare": 11.0,
+        "driverId": "driver_102",
+        "riderId": "rider_100"
+    },
+    {
+        "rideId": "RIDE_8F8A4518",
+        "pickup": "Train Station",
+        "drop": "Mall",
+        "distance": 18.4,
+        "fare": 51.0,
+        "driverId": "driver_100",
+        "riderId": "rider_101"
+    },
+    {
+        "rideId": "RIDE_A520A9AF",
+        "pickup": "Tech Park",
+        "drop": "Stadium",
+        "distance": 3.6,
+        "fare": 14.0,
+        "driverId": "AG1206",
+        "riderId": "rider_310"
+    },
+    {
+        "rideId": "RIDE_927A034B",
+        "pickup": "University",
+        "drop": "Downtown",
+        "distance": 5.6,
+        "fare": 19.0,
+        "driverId": "driver_102",
+        "riderId": "rider_317"
+    },
+    {
+        "rideId": "RIDE_DB5BF841",
+        "pickup": "Downtown",
+        "drop": "Tech Park",
+        "distance": 19.0,
+        "fare": 52.5,
+        "driverId": "driver_306",
+        "riderId": "rider_319"
+    },
+    {
+        "rideId": "RIDE_5DD02EFF",
+        "pickup": "University",
+        "drop": "Train Station",
+        "distance": 11.6,
+        "fare": 34.0,
+        "driverId": "driver_100",
+        "riderId": "rider_314"
+    },
+    {
+        "rideId": "RIDE_588D3F3F",
+        "pickup": "University",
+        "drop": "Train Station",
+        "distance": 6.3,
+        "fare": 20.75,
+        "driverId": "driver_302",
+        "riderId": "rider_318"
+    },
+    {
+        "rideId": "RIDE_8D319992",
+        "pickup": "Downtown",
+        "drop": "Tech Park",
+        "distance": 10.5,
+        "fare": 31.25,
+        "driverId": "driver_101",
+        "riderId": "rider_104"
+    },
+    {
+        "rideId": "RIDE_0BAA7472",
+        "pickup": "Stadium",
+        "drop": "Tech Park",
+        "distance": 10.9,
+        "fare": 32.25,
+        "driverId": "driver_303",
+        "riderId": "rider_304"
+    },
+    {
+        "rideId": "RIDE_EF505D9A",
+        "pickup": "Stadium",
+        "drop": "Mall",
+        "distance": 17.3,
+        "fare": 48.25,
+        "driverId": "driver_300",
+        "riderId": "rider_305"
+    },
+    {
+        "rideId": "RIDE_08E18D13",
+        "pickup": "Mall",
+        "drop": "Downtown",
+        "distance": 17.4,
+        "fare": 48.5,
+        "driverId": "driver_104",
+        "riderId": "rider_301"
+    },
+    {
+        "rideId": "RIDE_A75D7301",
+        "pickup": "University",
+        "drop": "Mall",
+        "distance": 2.4,
+        "fare": 11.0,
+        "driverId": "driver_309",
+        "riderId": "rider_315"
+    },
+    {
+        "rideId": "RIDE_3C91CB91",
+        "pickup": "Train Station",
+        "drop": "Downtown",
+        "distance": 10.3,
+        "fare": 30.75,
+        "driverId": "driver_307",
+        "riderId": "rider_319"
+    },
+    {
+        "rideId": "RIDE_A2A534A1",
+        "pickup": "University",
+        "drop": "Hospital",
+        "distance": 4.0,
+        "fare": 15.0,
+        "driverId": "driver_305",
+        "riderId": "rider_300"
+    },
+    {
+        "rideId": "RIDE_7BB4D443",
+        "pickup": "Hospital",
+        "drop": "Downtown",
+        "distance": 6.0,
+        "fare": 20.0,
+        "driverId": "driver_104",
+        "riderId": "rider_306"
+    },
+    {
+        "rideId": "RIDE_7D0481D7",
+        "pickup": "Airport",
+        "drop": "Stadium",
+        "distance": 12.9,
+        "fare": 37.25,
+        "driverId": "driver_104",
+        "riderId": "rider_316"
+    },
+    {
+        "rideId": "RIDE_059640A9",
+        "pickup": "Hospital",
+        "drop": "Airport",
+        "distance": 16.1,
+        "fare": 45.25,
+        "driverId": "driver_300",
+        "riderId": "rider_306"
+    },
+    {
+        "rideId": "RIDE_CA3B63EE",
+        "pickup": "Hospital",
+        "drop": "University",
+        "distance": 4.8,
+        "fare": 17.0,
+        "driverId": "driver_301",
+        "riderId": "rider_101"
+    },
+    {
+        "rideId": "RIDE_F198FE40",
+        "pickup": "Hospital",
+        "drop": "Tech Park",
+        "distance": 8.3,
+        "fare": 25.75,
+        "driverId": "driver_101",
+        "riderId": "rider_318"
+    },
+    {
+        "rideId": "RIDE_FB8B283D",
+        "pickup": "Downtown",
+        "drop": "University",
+        "distance": 4.4,
+        "fare": 16.0,
+        "driverId": "driver_104",
+        "riderId": "rider_306"
+    },
+    {
+        "rideId": "RIDE_FE0230FB",
+        "pickup": "Stadium",
+        "drop": "Hospital",
+        "distance": 15.9,
+        "fare": 44.75,
+        "driverId": "driver_102",
+        "riderId": "rider_101"
+    },
+    {
+        "rideId": "RIDE_E8852155",
+        "pickup": "Stadium",
+        "drop": "University",
+        "distance": 3.9,
+        "fare": 14.75,
+        "driverId": "AG1206",
+        "riderId": "rider_101"
+    },
+    {
+        "rideId": "RIDE_75CC8145",
+        "pickup": "Stadium",
+        "drop": "Tech Park",
+        "distance": 5.9,
+        "fare": 19.75,
+        "driverId": "driver_301",
+        "riderId": "rider_300"
+    },
+    {
+        "rideId": "RIDE_17307D60",
+        "pickup": "University",
+        "drop": "Mall",
+        "distance": 5.1,
+        "fare": 17.75,
+        "driverId": "driver_303",
+        "riderId": "rider_104"
+    },
+    {
+        "rideId": "RIDE_F8621C91",
+        "pickup": "Mall",
+        "drop": "Downtown",
+        "distance": 11.5,
+        "fare": 33.75,
+        "driverId": "driver_305",
+        "riderId": "rider_302"
+    },
+    {
+        "rideId": "RIDE_53E74A36",
+        "pickup": "Airport",
+        "drop": "University",
+        "distance": 19.0,
+        "fare": 52.5,
+        "driverId": "driver_300",
+        "riderId": "rider_300"
+    },
+    {
+        "rideId": "RIDE_00963143",
+        "pickup": "Train Station",
+        "drop": "Downtown",
+        "distance": 18.6,
+        "fare": 51.5,
+        "driverId": "driver_306",
+        "riderId": "rider_307"
+    },
+    {
+        "rideId": "RIDE_03886B1C",
+        "pickup": "Stadium",
+        "drop": "Airport",
+        "distance": 19.2,
+        "fare": 53.0,
+        "driverId": "driver_302",
+        "riderId": "rider_317"
+    },
+    {
+        "rideId": "RIDE_BBA5B8D0",
+        "pickup": "Downtown",
+        "drop": "Hospital",
+        "distance": 7.0,
+        "fare": 22.5,
+        "driverId": "driver_306",
+        "riderId": "r1"
+    },
+    {
+        "rideId": "RIDE_C10E67A0",
+        "pickup": "Airport",
+        "drop": "Mall",
+        "distance": 5.1,
+        "fare": 17.75,
+        "driverId": "driver_103",
+        "riderId": "rider_103"
+    },
+    {
+        "rideId": "RIDE_9EDFE347",
+        "pickup": "Tech Park",
+        "drop": "University",
+        "distance": 19.4,
+        "fare": 53.5,
+        "driverId": "driver_104",
+        "riderId": "rider_314"
+    },
+    {
+        "rideId": "RIDE_931F1AD7",
+        "pickup": "Tech Park",
+        "drop": "Airport",
+        "distance": 9.4,
+        "fare": 28.5,
+        "driverId": "driver_104",
+        "riderId": "rider_307"
+    },
+    {
+        "rideId": "RIDE_FA458FD2",
+        "pickup": "Downtown",
+        "drop": "Train Station",
+        "distance": 2.8,
+        "fare": 12.0,
+        "driverId": "driver_302",
+        "riderId": "rider_313"
+    },
+    {
+        "rideId": "RIDE_7A82AA20",
+        "pickup": "Stadium",
+        "drop": "Downtown",
+        "distance": 18.9,
+        "fare": 52.25,
+        "driverId": "driver_104",
+        "riderId": "rider_310"
+    },
+    {
+        "rideId": "RIDE_F387450D",
+        "pickup": "Downtown",
+        "drop": "Mall",
+        "distance": 17.3,
+        "fare": 48.25,
+        "driverId": "driver_306",
+        "riderId": "rider_309"
+    },
+    {
+        "rideId": "RIDE_BA4E170C",
+        "pickup": "University",
+        "drop": "Mall",
+        "distance": 15.6,
+        "fare": 44.0,
+        "driverId": "driver_103",
+        "riderId": "rider_100"
+    },
+    {
+        "rideId": "RIDE_8AC44F7B",
+        "pickup": "Hospital",
+        "drop": "Tech Park",
+        "distance": 18.0,
+        "fare": 50.0,
+        "driverId": "driver_301",
+        "riderId": "rider_319"
+    },
+    {
+        "rideId": "RIDE_5BEFA71B",
+        "pickup": "Airport",
+        "drop": "Downtown",
+        "distance": 5.7,
+        "fare": 19.25,
+        "driverId": "driver_301",
+        "riderId": "rider_312"
+    },
+    {
+        "rideId": "RIDE_A7737F46",
+        "pickup": "Airport",
+        "drop": "Hospital",
+        "distance": 14.9,
+        "fare": 42.25,
+        "driverId": "AG1206",
+        "riderId": "rider_318"
+    },
+    {
+        "rideId": "RIDE_2A157529",
+        "pickup": "Airport",
+        "drop": "University",
+        "distance": 10.0,
+        "fare": 30.0,
+        "driverId": "AG1206",
+        "riderId": "rider_309"
+    },
+    {
+        "rideId": "RIDE_E5FF2EEB",
+        "pickup": "Train Station",
+        "drop": "Downtown",
+        "distance": 7.2,
+        "fare": 23.0,
+        "driverId": "driver_303",
+        "riderId": "rider_310"
+    },
+    {
+        "rideId": "RIDE_12EAFFB1",
+        "pickup": "Mall",
+        "drop": "Stadium",
+        "distance": 8.8,
+        "fare": 27.0,
+        "driverId": "driver_101",
+        "riderId": "rider_101"
+    },
+    {
+        "rideId": "RIDE_EF06A2AF",
+        "pickup": "Downtown",
+        "drop": "Airport",
+        "distance": 19.4,
+        "fare": 53.5,
+        "driverId": "driver_101",
+        "riderId": "rider_102"
+    },
+    {
+        "rideId": "RIDE_1F74F427",
+        "pickup": "Stadium",
+        "drop": "Tech Park",
+        "distance": 13.0,
+        "fare": 37.5,
+        "driverId": "driver_100",
+        "riderId": "rider_100"
+    },
+    {
+        "rideId": "RIDE_567260BC",
+        "pickup": "Airport",
+        "drop": "Hospital",
+        "distance": 9.0,
+        "fare": 27.5,
+        "driverId": "driver_306",
+        "riderId": "rider_311"
+    },
+    {
+        "rideId": "RIDE_31EA67BF",
+        "pickup": "Mall",
+        "drop": "Hospital",
+        "distance": 14.0,
+        "fare": 40.0,
+        "driverId": "AG1206",
+        "riderId": "rider_306"
+    },
+    {
+        "rideId": "RIDE_99C4FB49",
+        "pickup": "Hospital",
+        "drop": "University",
+        "distance": 9.2,
+        "fare": 28.0,
+        "driverId": "driver_304",
+        "riderId": "rider_102"
+    },
+    {
+        "rideId": "RIDE_4A65F65D",
+        "pickup": "University",
+        "drop": "Train Station",
+        "distance": 2.9,
+        "fare": 12.25,
+        "driverId": "driver_300",
+        "riderId": "rider_314"
+    },
+    {
+        "rideId": "RIDE_348479F3",
+        "pickup": "Stadium",
+        "drop": "Downtown",
+        "distance": 13.1,
+        "fare": 37.75,
+        "driverId": "driver_104",
+        "riderId": "rider_301"
+    },
+    {
+        "rideId": "RIDE_489AA196",
+        "pickup": "University",
+        "drop": "Tech Park",
+        "distance": 19.4,
+        "fare": 53.5,
+        "driverId": "driver_305",
+        "riderId": "rider_306"
+    },
+    {
+        "rideId": "RIDE_BA42CEDE",
+        "pickup": "Mall",
+        "drop": "Train Station",
+        "distance": 12.1,
+        "fare": 35.25,
+        "driverId": "driver_102",
+        "riderId": "rider_311"
+    },
+    {
+        "rideId": "RIDE_CA684CD5",
+        "pickup": "Stadium",
+        "drop": "Tech Park",
+        "distance": 14.7,
+        "fare": 41.75,
+        "driverId": "driver_309",
+        "riderId": "rider_103"
+    },
+    {
+        "rideId": "RIDE_BC933431",
+        "pickup": "n1",
+        "drop": "n2",
+        "distance": 15.0,
+        "fare": 42.5,
+        "driverId": "driver_100",
+        "riderId": "r1"
+    },
+    {
+        "rideId": "RIDE_C8F320E0",
+        "pickup": "n1",
+        "drop": "n2",
+        "distance": 15.0,
+        "fare": 42.5,
+        "driverId": "driver_305",
+        "riderId": "rider_315"
+    },
+    {
+        "rideId": "RIDE_7399E299",
+        "pickup": "n1",
+        "drop": "n2",
+        "distance": 15.0,
+        "fare": 42.5,
+        "driverId": "driver_308",
+        "riderId": "rider_315"
+    },
+    {
+        "rideId": "RIDE_85FEFE32",
+        "pickup": "n1",
+        "drop": "n2",
+        "distance": 15.0,
+        "fare": 42.5,
+        "driverId": "driver_307",
+        "riderId": "rider_315"
+    }
+]
