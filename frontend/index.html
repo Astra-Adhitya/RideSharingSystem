@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="MINI RIDE SHARING SYSTEM - Book rides, manage drivers, and track your journey.">
     <title>MINI RIDE SHARING SYSTEM</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/varien" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <div class="background-animation"></div>
     <div class="particles" id="particles"></div>
@@ -21,12 +26,12 @@
                 <h1 class="app-title">MINI RIDE SHARING SYSTEM</h1>
                 <p class="app-subtitle">Log in or create an account to get started.</p>
             </div>
-            
+
             <div class="toggle-btns">
                 <button id="btn-login-tab" class="active" onclick="toggleAuth('login')">Login</button>
                 <button id="btn-register-tab" onclick="toggleAuth('register')">Register</button>
             </div>
-            
+
             <div id="login-form">
                 <h2>Welcome Back</h2>
                 <input type="text" id="login-id" placeholder="Enter User ID">
@@ -63,10 +68,12 @@
                     <!-- Left side: Tabs -->
                     <div style="flex: 1; min-width: 0; display:flex; flex-direction:column;">
                         <div class="toggle-btns" style="margin-bottom: 20px;">
-                            <button id="btn-rider-book-tab" class="active" onclick="toggleRiderTab('book')">Book a Ride</button>
-                            <button id="btn-rider-history-tab" onclick="toggleRiderTab('history')">Previous Rides</button>
+                            <button id="btn-rider-book-tab" class="active" onclick="toggleRiderTab('book')">Book a
+                                Ride</button>
+                            <button id="btn-rider-history-tab" onclick="toggleRiderTab('history')">Previous
+                                Rides</button>
                         </div>
-                        
+
                         <div id="rider-book-section">
                             <div class="form-group">
                                 <input type="text" id="pickup" placeholder="📍 Pickup Location">
@@ -94,13 +101,15 @@
                         <div style="width: 100%; display:flex; gap:10px;">
                             <div class="card" style="flex:1; margin-bottom:0;">
                                 <div class="card-info" style="text-align:center; width:100%;">
-                                    <h4 style="font-size:12px; margin-bottom:6px; color:var(--text-muted);">Total Spent</h4>
+                                    <h4 style="font-size:12px; margin-bottom:6px; color:var(--text-muted);">Total Spent
+                                    </h4>
                                     <p id="rider-total-spent" class="stat-value-green">₹0.00</p>
                                 </div>
                             </div>
                             <div class="card" style="flex:1; margin-bottom:0;">
                                 <div class="card-info" style="text-align:center; width:100%;">
-                                    <h4 style="font-size:12px; margin-bottom:6px; color:var(--text-muted);">Total Rides</h4>
+                                    <h4 style="font-size:12px; margin-bottom:6px; color:var(--text-muted);">Total Rides
+                                    </h4>
                                     <p id="rider-total-rides" style="font-size:18px; font-weight:bold;">0</p>
                                 </div>
                             </div>
@@ -116,20 +125,27 @@
                     <!-- Left side: Tabs -->
                     <div style="flex: 1; min-width: 0; display:flex; flex-direction:column;">
                         <div class="toggle-btns" style="margin-bottom: 20px;">
-                            <button id="btn-driver-status-tab" class="active" onclick="toggleDriverTab('status')">Current Status</button>
-                            <button id="btn-driver-history-tab" onclick="toggleDriverTab('history')">Previous Rides</button>
+                            <button id="btn-driver-status-tab" class="active"
+                                onclick="toggleDriverTab('status')">Current Status</button>
+                            <button id="btn-driver-history-tab" onclick="toggleDriverTab('history')">Previous
+                                Rides</button>
                         </div>
-                        
+
                         <div id="driver-status-section" style="text-align: center; padding: 30px 20px;">
-                            <div style="display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:20px;">
+                            <div
+                                style="display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:20px;">
                                 <label class="toggle-switch">
-                                    <input type="checkbox" id="driver-toggle" checked onchange="toggleDriverAvailability()">
+                                    <input type="checkbox" id="driver-toggle" checked
+                                        onchange="toggleDriverAvailability()">
                                     <span class="toggle-slider"></span>
                                 </label>
                                 <span id="driver-status-label" class="status-online">Online & Available</span>
                             </div>
-                            <h4 id="driver-status-heading" style="font-size:18px; color: var(--text-main); margin-bottom:12px;">You are currently online.</h4>
-                            <p id="driver-status-desc" style="color:var(--text-muted); line-height:1.6;">Riders can see your vehicle details and book you for a ride. Stay available to earn more!</p>
+                            <h4 id="driver-status-heading"
+                                style="font-size:18px; color: var(--text-main); margin-bottom:12px;">You are currently
+                                online.</h4>
+                            <p id="driver-status-desc" style="color:var(--text-muted); line-height:1.6;">Riders can see
+                                your vehicle details and book you for a ride. Stay available to earn more!</p>
                         </div>
 
                         <div id="driver-history-section" style="display:none;">
@@ -149,13 +165,15 @@
                         <div style="width: 100%; display:flex; gap:10px;">
                             <div class="card" style="flex:1; margin-bottom:0;">
                                 <div class="card-info" style="text-align:center; width:100%;">
-                                    <h4 style="font-size:12px; margin-bottom:6px; color:var(--text-muted);">Total Earned</h4>
+                                    <h4 style="font-size:12px; margin-bottom:6px; color:var(--text-muted);">Total Earned
+                                    </h4>
                                     <p id="driver-total-earned" class="stat-value-green">₹0.00</p>
                                 </div>
                             </div>
                             <div class="card" style="flex:1; margin-bottom:0;">
                                 <div class="card-info" style="text-align:center; width:100%;">
-                                    <h4 style="font-size:12px; margin-bottom:6px; color:var(--text-muted);">Total Rides</h4>
+                                    <h4 style="font-size:12px; margin-bottom:6px; color:var(--text-muted);">Total Rides
+                                    </h4>
                                     <p id="driver-total-rides" style="font-size:18px; font-weight:bold;">0</p>
                                 </div>
                             </div>
@@ -168,22 +186,26 @@
             <div id="admin-view" style="display:none;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 22px;">
                     <h3 style="margin-bottom: 0;">Admin Portal</h3>
-                    <button id="btn-manage-users" class="secondary-btn" style="border-color:rgba(239,68,68,0.4); color:#ef4444;" onclick="toggleRemoveMode()">Manage Users</button>
+                    <button id="btn-manage-users" class="secondary-btn"
+                        style="border-color:rgba(239,68,68,0.4); color:#ef4444;" onclick="toggleRemoveMode()">Manage
+                        Users</button>
                 </div>
 
                 <div style="display:flex; justify-content:space-between; align-items: stretch; gap: 24px;">
                     <!-- Left side: Riders & Drivers -->
                     <div style="flex: 1; min-width: 0; display:flex; gap:16px;">
                         <div style="flex:1;">
-                            <h4 style="margin-bottom:6px;">Drivers <span id="admin-driver-count" class="count-badge">0</span></h4>
+                            <h4 style="margin-bottom:6px;">Drivers <span id="admin-driver-count"
+                                    class="count-badge">0</span></h4>
                             <div id="admin-drivers-list" class="list-container" style="max-height:420px;"></div>
                         </div>
                         <div style="flex:1;">
-                            <h4 style="margin-bottom:6px;">Riders <span id="admin-rider-count" class="count-badge">0</span></h4>
+                            <h4 style="margin-bottom:6px;">Riders <span id="admin-rider-count"
+                                    class="count-badge">0</span></h4>
                             <div id="admin-riders-list" class="list-container" style="max-height:420px;"></div>
                         </div>
                     </div>
-                    
+
                     <!-- Right side: Pie chart & Stats -->
                     <div class="stat-panel" style="width: 300px; min-width: 300px;">
                         <div style="width: 100%; max-width: 220px; margin-bottom: 28px;">
@@ -192,18 +214,21 @@
                         <div style="width: 100%; display:flex; gap:10px;">
                             <div class="card" style="flex:1; margin-bottom:0;">
                                 <div class="card-info" style="text-align:center; width:100%;">
-                                    <h4 style="font-size:12px; margin-bottom:6px; color:var(--text-muted);">Total Income</h4>
+                                    <h4 style="font-size:12px; margin-bottom:6px; color:var(--text-muted);">Total Income
+                                    </h4>
                                     <p id="admin-income" class="stat-value-green">₹0.00</p>
                                 </div>
                             </div>
                             <div class="card" style="flex:1; margin-bottom:0;">
                                 <div class="card-info" style="text-align:center; width:100%;">
-                                    <h4 style="font-size:12px; margin-bottom:6px; color:var(--text-muted);">Completed Rides</h4>
+                                    <h4 style="font-size:12px; margin-bottom:6px; color:var(--text-muted);">Completed
+                                        Rides</h4>
                                     <p id="admin-rides" style="font-size:18px; font-weight:bold;">0</p>
                                 </div>
                             </div>
                         </div>
-                        <button class="primary-btn" style="margin-top:20px; width: 100%; padding: 12px;" onclick="fetchAdminStats()">Refresh Stats</button>
+                        <button class="primary-btn" style="margin-top:20px; width: 100%; padding: 12px;"
+                            onclick="fetchAdminStats()">Refresh Stats</button>
                     </div>
                 </div>
             </div>
@@ -213,4 +238,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
