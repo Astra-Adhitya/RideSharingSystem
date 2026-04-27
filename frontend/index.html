@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astra Rides</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="container">
+        <!-- Auth Section -->
+        <section id="auth-section" class="glass-panel active">
+            <div class="toggle-btns">
+                <button id="btn-login-tab" class="active" onclick="toggleAuth('login')">Login</button>
+                <button id="btn-register-tab" onclick="toggleAuth('register')">Register</button>
+            </div>
+            
+            <div id="login-form">
+                <h2>Welcome Back</h2>
+                <input type="text" id="login-id" placeholder="Enter User ID">
+                <button class="primary-btn" onclick="login()">Login</button>
+            </div>
+
+            <div id="register-form" style="display:none;">
+                <h2>Create Account</h2>
+                <input type="text" id="reg-id" placeholder="Choose User ID">
+                <input type="text" id="reg-name" placeholder="Full Name">
+                <input type="text" id="reg-phone" placeholder="Phone Number">
+                <select id="reg-role" onchange="toggleVehicleField()">
+                    <option value="rider">Rider</option>
+                    <option value="driver">Driver</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <input type="text" id="reg-vehicle" placeholder="Vehicle Details" style="display:none;">
+                <button class="primary-btn" onclick="register()">Register</button>
+            </div>
+            <p id="auth-error" class="error-msg"></p>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="glass-panel" style="display:none;">
+            <header>
+                <h2 id="user-greeting">Hello</h2>
+                <button class="secondary-btn" onclick="logout()">Logout</button>
+            </header>
+
+            <div id="rider-view" style="display:none;">
+                <h3>Book a Ride</h3>
+                <div class="form-group" style="margin-top: 15px;">
+                    <input type="text" id="pickup" placeholder="Pickup Location">
+                    <input type="text" id="drop" placeholder="Drop Location">
+                    <input type="number" id="distance" placeholder="Distance (km)">
+                </div>
+                <button class="primary-btn" onclick="fetchDrivers()">Find Available Drivers</button>
+                <div id="drivers-list" class="list-container"></div>
+            </div>
+
+            <div id="driver-view" style="display:none; text-align: center;">
+                <h3>Driver Dashboard</h3>
+                <p style="margin-top:15px; color:#94a3b8;">Wait for riders to book you.</p>
+                <p style="margin-top:5px;">Currently you show as available by default.</p>
+            </div>
+
+            <div id="admin-view" style="display:none;">
+                <h3>Admin Portal</h3>
+                <div class="card" style="margin-top:15px;">
+                    <div class="card-info">
+                        <h4>Total Income</h4>
+                        <p id="admin-income" style="color:#a3e635; font-size:18px; font-weight:bold;">$0.00</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-info">
+                        <h4>Total Rides Completed</h4>
+                        <p id="admin-rides">0</p>
+                    </div>
+                </div>
+                <button class="primary-btn" onclick="fetchAdminStats()">Refresh Stats</button>
+                <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                    <div style="width:48%;">
+                        <h4>Riders</h4>
+                        <div id="admin-riders-list" class="list-container" style="max-height:150px;"></div>
+                    </div>
+                    <div style="width:48%;">
+                        <h4>Drivers</h4>
+                        <div id="admin-drivers-list" class="list-container" style="max-height:150px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="history-wrapper" class="history-section" style="margin-top: 30px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3>Ride History</h3>
+                    <button class="secondary-btn" onclick="fetchHistory()">Refresh</button>
+                </div>
+                <div id="history-list" class="list-container"></div>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

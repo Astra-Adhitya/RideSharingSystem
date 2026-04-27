@@ -1,0 +1,9 @@
+[
+    {
+        "available": true,
+        "id": "admin123",
+        "name": "admin",
+        "phone": "admin",
+        "role": "admin"
+    }
+]
