@@ -215,28 +215,40 @@
 
     <!-- Drivers Tab -->
     <div class="tab-content" id="tab-drivers">
-        <div class="driver-grid">
-            {% set driver_data = {} %}
-            {% for ride in rides %}
-                {% if ride.driver in driver_data %}
-                    {% set _ = driver_data.update({ride.driver: {'rides': driver_data[ride.driver]['rides'] + 1, 'revenue': driver_data[ride.driver]['revenue'] + ride.fare}}) %}
-                {% else %}
-                    {% set _ = driver_data.update({ride.driver: {'rides': 1, 'revenue': ride.fare}}) %}
-                {% endif %}
-            {% endfor %}
 
+        <!-- Add Driver Form -->
+        <form method="POST" action="/add-driver" style="margin-bottom:20px;">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;gap:12px;align-items:flex-end;">
+                <div style="flex:1">
+                    <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;display:block;margin-bottom:6px">Driver Name</label>
+                    <input type="text" name="driver_name" placeholder="e.g. Arjun" required
+                        style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;" />
+                </div>
+                <div style="flex:1">
+                    <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;display:block;margin-bottom:6px">Vehicle</label>
+                    <input type="text" name="vehicle" placeholder="e.g. Honda City"
+                        style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;" />
+                </div>
+                <button type="submit" style="background:linear-gradient(135deg,var(--accent),#6366f1);border:none;border-radius:10px;padding:11px 22px;color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">+ Add Driver</button>
+            </div>
+        </form>
+
+        <!-- Driver cards — from drivers.json, enriched with ride stats -->
+        <div class="driver-grid">
             {% set emojis = ['🧑‍✈️', '👨‍✈️', '👩‍✈️', '🚗', '🛻'] %}
-            {% for name, info in driver_data.items() %}
+            {% for d in drivers %}
+                {% set ride_count = rides | selectattr('driver', 'equalto', d.name) | list | length %}
+                {% set revenue    = rides | selectattr('driver', 'equalto', d.name) | sum(attribute='fare') %}
             <div class="driver-card">
                 <div class="driver-avatar">{{ emojis[loop.index0 % emojis|length] }}</div>
-                <div class="driver-name">{{ name }}</div>
-                <div class="driver-stat">{{ info.rides }} ride{{ 's' if info.rides != 1 }}</div>
-                <div class="driver-revenue">₹{{ "%.2f"|format(info.revenue) }}</div>
+                <div class="driver-name">{{ d.name }}</div>
+                <div class="driver-stat" style="margin-bottom:2px">🚘 {{ d.vehicle }}</div>
+                <div class="driver-stat">{{ ride_count }} ride{{ 's' if ride_count != 1 }}</div>
+                <div class="driver-revenue">₹{{ "%.2f"|format(revenue) }}</div>
             </div>
             {% endfor %}
-
-            {% if not driver_data %}
-            <div style="color:var(--muted);font-size:13px;padding:40px">No driver data yet.</div>
+            {% if not drivers %}
+            <div style="color:var(--muted);font-size:13px;padding:40px">No drivers yet. Add one above.</div>
             {% endif %}
         </div>
     </div>

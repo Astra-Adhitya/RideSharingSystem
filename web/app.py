@@ -5,7 +5,8 @@ from datetime import datetime
 app = Flask(__name__)
 
 DATA_PATH    = os.path.join(os.path.dirname(__file__), '..', 'data', 'data.csv')
-PENDING_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'pending_rides.json')
+PENDING_PATH  = os.path.join(os.path.dirname(__file__), '..', 'data', 'pending_rides.json')
+DRIVERS_PATH  = os.path.join(os.path.dirname(__file__), '..', 'data', 'drivers.json')
 
 # Bengaluru landmarks with coordinates
 LOCATIONS = {
@@ -20,8 +21,6 @@ LOCATIONS = {
     "Banashankari":    {"coords": [12.9255, 77.5468]},
     "Yelahanka":       {"coords": [13.1005, 77.5963]},
 }
-
-DRIVERS = ["Rahul", "Vikram", "Suresh"]
 
 
 # ── Helpers ─────────────────────────────────────────────────────────────────
@@ -81,6 +80,26 @@ def write_pending(data):
         json.dump(data, f, indent=2)
 
 
+def read_drivers():
+    """Return list of driver dicts {name, vehicle} from drivers.json."""
+    try:
+        with open(DRIVERS_PATH, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+
+def write_drivers(data):
+    os.makedirs(os.path.dirname(DRIVERS_PATH), exist_ok=True)
+    with open(DRIVERS_PATH, 'w') as f:
+        json.dump(data, f, indent=2)
+
+
+def driver_names():
+    """Convenience: just the names list for dropdowns."""
+    return [d['name'] for d in read_drivers()]
+
+
 def append_csv(ride):
     with open(DATA_PATH, 'a', newline='') as f:
         csv.writer(f).writerow([
@@ -100,7 +119,7 @@ def home():
         total_rides=n, total_revenue=round(rev,2), avg_fare=avg,
         total_distance=round(dst,2), unique_drivers=ud, unique_passengers=up,
         recent_rides=rides[-5:][::-1], pending_count=len(pending),
-        locations=LOCATIONS,
+        locations=LOCATIONS, driver_count=len(read_drivers()),
     )
 
 
@@ -156,12 +175,12 @@ def book():
 @app.route('/driver')
 def driver():
     return render_template('driver.html',
-        pending=read_pending(), drivers=DRIVERS, locations=LOCATIONS)
+        pending=read_pending(), drivers=read_drivers(), locations=LOCATIONS)
 
 
 @app.route('/accept/<ride_id>', methods=['POST'])
 def accept(ride_id):
-    driver_name = request.form.get('driver_name','').strip()
+    driver_name = request.form.get('driver_name', '').strip()
     pending = read_pending()
     ride = next((r for r in pending if r['id'] == ride_id), None)
     if ride and driver_name:
@@ -178,11 +197,25 @@ def accept(ride_id):
 def admin():
     rides, n, rev, avg, dst, ud, up = read_data()
     pending = read_pending()
+    drivers = read_drivers()
     return render_template('admin.html', rides=rides,
         total_rides=n, total_revenue=round(rev,2), avg_fare=avg,
         total_distance=round(dst,2), unique_drivers=ud, unique_passengers=up,
-        pending=pending, drivers=DRIVERS, locations=LOCATIONS,
+        pending=pending, drivers=drivers, locations=LOCATIONS,
     )
+
+
+@app.route('/add-driver', methods=['POST'])
+def add_driver():
+    name    = request.form.get('driver_name', '').strip()
+    vehicle = request.form.get('vehicle', '').strip() or 'Unknown Vehicle'
+    if name:
+        drivers = read_drivers()
+        # Avoid duplicates (case-insensitive)
+        if not any(d['name'].lower() == name.lower() for d in drivers):
+            drivers.append({'name': name, 'vehicle': vehicle})
+            write_drivers(drivers)
+    return redirect(url_for('admin') + '#tab-drivers')
 
 
 @app.route('/api/rides')

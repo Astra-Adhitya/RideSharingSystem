@@ -115,7 +115,7 @@
                         <select class="driver-select" name="driver_name" required>
                             <option value="" disabled selected>Select driver…</option>
                             {% for d in drivers %}
-                            <option value="{{ d }}">{{ d }}</option>
+                            <option value="{{ d.name }}">{{ d.name }} — {{ d.vehicle }}</option>
                             {% endfor %}
                         </select>
                         <button type="submit" class="accept-btn">✅ Accept Ride</button>
