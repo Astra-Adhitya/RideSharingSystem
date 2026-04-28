@@ -1,107 +1,604 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Ride Stats</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RideSync · Statistics</title>
+    <meta name="description" content="Revenue, ride distribution, distance, and passenger analytics for RideSync." />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
+        :root {
+            --bg:         #080c14;
+            --surface:    #0e1420;
+            --surface2:   #141c2e;
+            --border:     rgba(255,255,255,0.06);
+            --accent:     #3b82f6;
+            --accent2:    #06d6a0;
+            --accent3:    #f59e0b;
+            --purple:     #a855f7;
+            --danger:     #ef4444;
+            --text:       #f0f4ff;
+            --muted:      #6b7a99;
+            --radius:     16px;
+            --nav-w:      72px;
+            --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0b0b0b;
-            color: white;
-            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
         }
 
-        h1 {
-            margin-bottom: 20px;
+        /* ── Sidebar ─────────────────────────────────────────────── */
+        .sidebar {
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            width: var(--nav-w);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            z-index: 100;
+            gap: 8px;
         }
 
-        .container {
+        .logo {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 0 20px rgba(59,130,246,0.4);
+        }
+
+        .nav-link {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            text-decoration: none;
+            color: var(--muted);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(59,130,246,0.15);
+            color: var(--accent);
+        }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: -1px;
+            width: 3px; height: 24px;
+            background: var(--accent);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .nav-link[title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            left: 60px;
+            background: var(--surface2);
+            color: var(--text);
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 8px;
+            white-space: nowrap;
+            border: 1px solid var(--border);
+            pointer-events: none;
+        }
+
+        /* ── Main ────────────────────────────────────────────────── */
+        .main {
+            margin-left: var(--nav-w);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 28px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            flex-shrink: 0;
+        }
+
+        .topbar-left h1 { font-size: 18px; font-weight: 700; }
+        .topbar-left span { font-size: 13px; color: var(--muted); }
+
+        /* ── KPI Row ─────────────────────────────────────────────── */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .kpi-tile {
+            background: var(--surface);
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .kpi-icon-box {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .kpi-tile:nth-child(1) .kpi-icon-box { background: rgba(59,130,246,0.12); }
+        .kpi-tile:nth-child(2) .kpi-icon-box { background: rgba(6,214,160,0.12); }
+        .kpi-tile:nth-child(3) .kpi-icon-box { background: rgba(245,158,11,0.12); }
+        .kpi-tile:nth-child(4) .kpi-icon-box { background: rgba(168,85,247,0.12); }
+
+        .kpi-text .label  { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; }
+        .kpi-text .val    { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+
+        .kpi-tile:nth-child(1) .val { color: var(--accent); }
+        .kpi-tile:nth-child(2) .val { color: var(--accent2); }
+        .kpi-tile:nth-child(3) .val { color: var(--accent3); }
+        .kpi-tile:nth-child(4) .val { color: var(--purple); }
+
+        /* ── Charts Grid ─────────────────────────────────────────── */
+        .charts-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
             gap: 20px;
+            padding: 24px 28px;
         }
 
-        .card {
-            background: #111;
-            padding: 20px;
-            border-radius: 12px;
+        .chart-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: border-color var(--transition);
         }
 
-        canvas {
-            width: 100% !important;
-            height: 450px !important;
+        .chart-card:hover {
+            border-color: rgba(59,130,246,0.2);
         }
 
-        a {
-            color: #00d4ff;
-            text-decoration: none;
+        .chart-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
         }
+
+        .chart-title {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .chart-sub {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .chart-tag {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .tag-blue   { background: rgba(59,130,246,0.12); color: var(--accent); }
+        .tag-green  { background: rgba(6,214,160,0.12);  color: var(--accent2); }
+        .tag-amber  { background: rgba(245,158,11,0.12); color: var(--accent3); }
+        .tag-purple { background: rgba(168,85,247,0.12); color: var(--purple); }
+
+        .chart-body {
+            position: relative;
+            height: 260px;
+        }
+
+        /* ── Leaderboard ─────────────────────────────────────────── */
+        .leaderboard {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .lb-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: var(--surface2);
+            border-radius: 10px;
+            transition: background var(--transition);
+        }
+
+        .lb-row:hover { background: rgba(59,130,246,0.07); }
+
+        .lb-rank {
+            width: 24px; height: 24px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .rank-1 { background: rgba(245,158,11,0.2); color: var(--accent3); }
+        .rank-2 { background: rgba(148,163,184,0.15); color: #94a3b8; }
+        .rank-3 { background: rgba(180,83,9,0.15);   color: #b45309; }
+        .rank-n { background: var(--border);           color: var(--muted); }
+
+        .lb-name { flex: 1; font-size: 13px; font-weight: 600; }
+        .lb-count { font-size: 12px; color: var(--muted); }
+        .lb-bar-wrap { width: 80px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+        .lb-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; transition: width 1s ease; }
+
+        /* ── Empty ───────────────────────────────────────────────── */
+        .empty-chart {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 260px;
+            color: var(--muted);
+            font-size: 13px;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .empty-chart .icon { font-size: 40px; opacity: 0.25; }
     </style>
 </head>
-
 <body>
 
-<h1>📈 Ride Statistics</h1>
+<!-- Sidebar -->
+<nav class="sidebar">
+    <div class="logo">🚗</div>
+    <a href="/"      class="nav-link"        title="Dashboard">🏠</a>
+    <a href="/data"  class="nav-link"         title="Ride Data">📋</a>
+    <a href="/stats" class="nav-link active"  title="Statistics">📈</a>
+    <a href="/book"  class="nav-link"         title="Book a Ride">🚖</a>
+    <a href="/driver" class="nav-link"        title="Driver Panel">🧑‍✈️</a>
+    <a href="/admin" class="nav-link"         title="Admin Portal">🔐</a>
+</nav>
 
-<div class="container">
+<!-- Main -->
+<div class="main">
 
-    <div class="card">
-        <h3>Revenue Overview</h3>
-        <canvas id="revenueChart"></canvas>
+    <!-- Top bar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <h1>Statistics</h1>
+            <span>Analytics from live ride data</span>
+        </div>
+    </header>
+
+    <!-- KPI row -->
+    <div class="kpi-row">
+        <div class="kpi-tile">
+            <div class="kpi-icon-box">🚗</div>
+            <div class="kpi-text">
+                <div class="label">Total Rides</div>
+                <div class="val" data-target="{{ total_rides }}">0</div>
+            </div>
+        </div>
+        <div class="kpi-tile">
+            <div class="kpi-icon-box">💰</div>
+            <div class="kpi-text">
+                <div class="label">Revenue</div>
+                <div class="val" data-target="{{ total_revenue }}" data-prefix="₹">₹0</div>
+            </div>
+        </div>
+        <div class="kpi-tile">
+            <div class="kpi-icon-box">🎯</div>
+            <div class="kpi-text">
+                <div class="label">Avg Fare</div>
+                <div class="val" data-target="{{ avg_fare }}" data-prefix="₹">₹0</div>
+            </div>
+        </div>
+        <div class="kpi-tile">
+            <div class="kpi-icon-box">📏</div>
+            <div class="kpi-text">
+                <div class="label">Total Distance</div>
+                <div class="val" data-target="{{ total_distance }}" data-suffix=" km">0 km</div>
+            </div>
+        </div>
     </div>
 
-    <div class="card">
-        <h3>Ride Distribution</h3>
-        <canvas id="rideChart"></canvas>
-    </div>
+    <!-- Charts -->
+    <div class="charts-grid">
 
-</div>
+        <!-- 1. Fare per ride (bar) -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <div>
+                    <div class="chart-title">Fare per Ride</div>
+                    <div class="chart-sub">Individual ride earnings (₹)</div>
+                </div>
+                <span class="chart-tag tag-blue">Bar</span>
+            </div>
+            <div class="chart-body">
+                {% if rides %}
+                <canvas id="fareChart"></canvas>
+                {% else %}
+                <div class="empty-chart"><div class="icon">📊</div>No data yet</div>
+                {% endif %}
+            </div>
+        </div>
 
-<br>
-<a href="/">← Back to Dashboard</a>
+        <!-- 2. Ride distribution (doughnut) -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <div>
+                    <div class="chart-title">Ride Distribution</div>
+                    <div class="chart-sub">Passengers vs. drivers ratio</div>
+                </div>
+                <span class="chart-tag tag-green">Doughnut</span>
+            </div>
+            <div class="chart-body">
+                {% if rides %}
+                <canvas id="distroChart"></canvas>
+                {% else %}
+                <div class="empty-chart"><div class="icon">🍩</div>No data yet</div>
+                {% endif %}
+        </div>
+        </div>
+
+        <!-- 3. Distance per ride (line) -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <div>
+                    <div class="chart-title">Distance per Ride</div>
+                    <div class="chart-sub">Kilometres covered per trip</div>
+                </div>
+                <span class="chart-tag tag-amber">Line</span>
+            </div>
+            <div class="chart-body">
+                {% if rides %}
+                <canvas id="distChart"></canvas>
+                {% else %}
+                <div class="empty-chart"><div class="icon">📈</div>No data yet</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 4. Top passengers leaderboard -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <div>
+                    <div class="chart-title">Top Passengers</div>
+                    <div class="chart-sub">Ranked by total rides taken</div>
+                </div>
+                <span class="chart-tag tag-purple">Board</span>
+            </div>
+            <div class="leaderboard" id="leaderboard">
+                {% if rides %}
+                    {# Build passenger frequency map in Jinja2 #}
+                    {% set counts = {} %}
+                    {% for ride in rides %}
+                        {% if ride.passenger in counts %}
+                            {% set _ = counts.update({ride.passenger: counts[ride.passenger] + 1}) %}
+                        {% else %}
+                            {% set _ = counts.update({ride.passenger: 1}) %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {# Sort passengers by ride count descending #}
+                    {% set sorted_passengers = counts.items()|sort(attribute=1, reverse=true) %}
+                    {% set max_count = sorted_passengers[0][1] if sorted_passengers else 1 %}
+
+                    {% for name, count in sorted_passengers[:6] %}
+                    {% set rank = loop.index %}
+                    <div class="lb-row">
+                        <div class="lb-rank {% if rank == 1 %}rank-1{% elif rank == 2 %}rank-2{% elif rank == 3 %}rank-3{% else %}rank-n{% endif %}">{{ rank }}</div>
+                        <div class="lb-name">{{ name }}</div>
+                        <div class="lb-bar-wrap">
+                            <div class="lb-bar" style="width: {{ (count / max_count * 100)|int }}%"></div>
+                        </div>
+                        <div class="lb-count">{{ count }} ride{{ 's' if count != 1 }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-chart"><div class="icon">🏆</div>No data yet</div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div><!-- /charts-grid -->
+</div><!-- /main -->
 
 <script>
-    // Revenue Chart (Line)
-    new Chart(document.getElementById("revenueChart"), {
-        type: 'line',
-        data: {
-            labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
-            datasets: [{
-                label: "Revenue (₹)",
-                data: [200, 450, 300, 600, 700],
-                borderColor: "#00d4ff",
-                backgroundColor: "rgba(0,212,255,0.1)",
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            plugins: { legend: { labels: { color: "white" } } },
-            scales: {
-                x: { ticks: { color: "white" } },
-                y: { ticks: { color: "white" } }
-            }
+    /* ── Shared chart defaults ─────────────────────────────────── */
+    Chart.defaults.color           = '#6b7a99';
+    Chart.defaults.borderColor     = 'rgba(255,255,255,0.06)';
+    Chart.defaults.font.family     = 'Inter';
+
+    /* ── Count-up animation ─────────────────────────────────── */
+    document.querySelectorAll('.val[data-target]').forEach(el => {
+        const target = parseFloat(el.dataset.target) || 0;
+        const prefix = el.dataset.prefix || '';
+        const suffix = el.dataset.suffix || '';
+        const isFloat = String(target).includes('.');
+        const duration = 900;
+        const start = performance.now();
+        function tick(now) {
+            const t   = Math.min((now - start) / duration, 1);
+            const ease = 1 - Math.pow(1 - t, 3);
+            el.textContent = prefix + (isFloat ? (target * ease).toFixed(2) : Math.round(target * ease)) + suffix;
+            if (t < 1) requestAnimationFrame(tick);
         }
+        requestAnimationFrame(tick);
     });
 
-    // Ride Type Chart (Doughnut)
-    new Chart(document.getElementById("rideChart"), {
-        type: 'doughnut',
-        data: {
-            labels: ["Completed", "Cancelled", "Ongoing"],
-            datasets: [{
-                data: [70, 10, 20],
-                backgroundColor: ["#00ffae", "#ff4d4d", "#00d4ff"]
-            }]
-        },
-        options: {
-            plugins: { legend: { labels: { color: "white" } } }
+    /* ── Data from Flask ─────────────────────────────────────── */
+    const rides = {{ rides | tojson }};
+
+    if (rides.length) {
+        const labels   = rides.map((r, i) => `Ride ${i + 1}`);
+        const fares     = rides.map(r => r.fare);
+        const distances = rides.map(r => r.distance);
+
+        /* ── Passenger count for doughnut ──────────────────── */
+        const passengerCounts = {};
+        rides.forEach(r => {
+            passengerCounts[r.passenger] = (passengerCounts[r.passenger] || 0) + 1;
+        });
+        const pNames  = Object.keys(passengerCounts);
+        const pCounts = Object.values(passengerCounts);
+
+        const GRADIENT_COLORS = ['#3b82f6', '#06d6a0', '#f59e0b', '#a855f7', '#ef4444', '#ec4899'];
+
+        /* ── Helper: gradient fill ─────────────────────────── */
+        function makeGradient(ctx, c1, c2) {
+            const g = ctx.createLinearGradient(0, 0, 0, 260);
+            g.addColorStop(0, c1);
+            g.addColorStop(1, c2);
+            return g;
         }
-    });
+
+        /* 1. Fare Bar Chart */
+        const fareCtx = document.getElementById('fareChart').getContext('2d');
+        new Chart(fareCtx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Fare (₹)',
+                    data: fares,
+                    backgroundColor: makeGradient(fareCtx, 'rgba(59,130,246,0.8)', 'rgba(59,130,246,0.1)'),
+                    borderColor: '#3b82f6',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0e1420',
+                        borderColor: 'rgba(255,255,255,0.08)',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: ctx => ` ₹${ctx.parsed.y}`
+                        }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.04)' },
+                        ticks: { callback: v => '₹' + v }
+                    }
+                }
+            }
+        });
+
+        /* 2. Doughnut — passenger distribution */
+        new Chart(document.getElementById('distroChart'), {
+            type: 'doughnut',
+            data: {
+                labels: pNames,
+                datasets: [{
+                    data: pCounts,
+                    backgroundColor: GRADIENT_COLORS.slice(0, pNames.length),
+                    borderWidth: 0,
+                    hoverOffset: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 16, usePointStyle: true, pointStyle: 'circle' }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0e1420',
+                        borderColor: 'rgba(255,255,255,0.08)',
+                        borderWidth: 1,
+                        padding: 10,
+                    }
+                }
+            }
+        });
+
+        /* 3. Distance Line Chart */
+        const distCtx = document.getElementById('distChart').getContext('2d');
+        new Chart(distCtx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Distance (km)',
+                    data: distances,
+                    borderColor: '#f59e0b',
+                    backgroundColor: makeGradient(distCtx, 'rgba(245,158,11,0.25)', 'rgba(245,158,11,0)'),
+                    fill: true,
+                    tension: 0.45,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#f59e0b',
+                    pointBorderColor: '#080c14',
+                    pointBorderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0e1420',
+                        borderColor: 'rgba(255,255,255,0.08)',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: { label: ctx => ` ${ctx.parsed.y} km` }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.04)' },
+                        ticks: { callback: v => v + ' km' }
+                    }
+                }
+            }
+        });
+    }
 </script>
 
 </body>

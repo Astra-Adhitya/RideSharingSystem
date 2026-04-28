@@ -1,0 +1,26 @@
+[
+  {
+    "id": "a1b2c3d4",
+    "passenger": "Dev",
+    "pickup": "Whitefield",
+    "drop": "Koramangala",
+    "pickup_coords": [12.9698, 77.7499],
+    "drop_coords": [12.9279, 77.6271],
+    "distance": 19.3,
+    "est_fare": 377.4,
+    "timestamp": "2026-04-28 10:30",
+    "status": "pending"
+  },
+  {
+    "id": "e5f6g7h8",
+    "passenger": "Maya",
+    "pickup": "Yelahanka",
+    "drop": "HSR Layout",
+    "pickup_coords": [13.1005, 77.5963],
+    "drop_coords": [12.9116, 77.6473],
+    "distance": 21.8,
+    "est_fare": 422.4,
+    "timestamp": "2026-04-28 10:45",
+    "status": "pending"
+  }
+]

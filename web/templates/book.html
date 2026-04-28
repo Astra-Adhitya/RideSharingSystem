@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RideSync · Book a Ride</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        :root {
+            --bg:#080c14; --surface:#0e1420; --surface2:#141c2e;
+            --border:rgba(255,255,255,0.06); --accent:#3b82f6;
+            --accent2:#06d6a0; --accent3:#f59e0b;
+            --text:#f0f4ff; --muted:#6b7a99;
+            --radius:16px; --nav-w:72px;
+            --transition:0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;}
+        .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--nav-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:20px 0;z-index:100;gap:8px;}
+        .logo{width:42px;height:42px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:24px;box-shadow:0 0 20px rgba(59,130,246,0.4);}
+        .nav-link{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none;color:var(--muted);transition:var(--transition);position:relative;}
+        .nav-link:hover,.nav-link.active{background:rgba(59,130,246,0.15);color:var(--accent);}
+        .nav-link.active::before{content:'';position:absolute;left:-1px;width:3px;height:24px;background:var(--accent);border-radius:0 4px 4px 0;}
+        .nav-link[title]:hover::after{content:attr(title);position:absolute;left:60px;background:var(--surface2);color:var(--text);font-size:12px;font-weight:500;padding:4px 10px;border-radius:8px;white-space:nowrap;border:1px solid var(--border);pointer-events:none;}
+        .main{margin-left:var(--nav-w);flex:1;display:flex;flex-direction:column;}
+        .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;}
+        .topbar-left h1{font-size:18px;font-weight:700;}
+        .topbar-left span{font-size:13px;color:var(--muted);}
+        .page-body{display:grid;grid-template-columns:420px 1fr;flex:1;min-height:0;}
+        /* Form pane */
+        .form-pane{padding:28px;border-right:1px solid var(--border);overflow-y:auto;}
+        .form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column;gap:18px;}
+        label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;display:block;margin-bottom:6px;}
+        input[type="text"],select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:var(--transition);}
+        input[type="text"]:focus,select:focus{border-color:rgba(59,130,246,0.5);box-shadow:0 0 0 3px rgba(59,130,246,0.1);}
+        select option{background:#141c2e;}
+        .estimate-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+        .est-item .lbl{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;}
+        .est-item .val{font-size:22px;font-weight:800;margin-top:2px;}
+        .est-item:nth-child(1) .val{color:var(--accent3);}
+        .est-item:nth-child(2) .val{color:var(--accent2);}
+        .submit-btn{width:100%;background:linear-gradient(135deg,var(--accent),#6366f1);border:none;border-radius:12px;padding:14px;color:#fff;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:var(--transition);letter-spacing:0.3px;}
+        .submit-btn:hover{opacity:0.9;transform:translateY(-1px);}
+        .submit-btn:active{transform:translateY(0);}
+        .err-box{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;border-radius:10px;padding:12px 14px;font-size:13px;}
+        /* Success */
+        .success-card{background:var(--surface);border:1px solid rgba(6,214,160,0.3);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column;gap:14px;}
+        .success-card .check{font-size:40px;text-align:center;}
+        .success-card h2{font-size:18px;font-weight:800;text-align:center;color:var(--accent2);}
+        .success-card .row{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border);}
+        .success-card .row .k{color:var(--muted);}
+        .success-card .row .v{font-weight:600;}
+        .ride-id-badge{text-align:center;background:rgba(59,130,246,0.1);border:1px dashed rgba(59,130,246,0.4);border-radius:10px;padding:10px;font-size:20px;font-weight:800;letter-spacing:2px;color:var(--accent);}
+        .book-again{display:block;text-align:center;margin-top:4px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--muted);font-size:13px;text-decoration:none;transition:var(--transition);}
+        .book-again:hover{color:var(--text);border-color:rgba(255,255,255,0.15);}
+        /* Map pane */
+        .map-pane{position:relative;}
+        #book-map{width:100%;height:100%;min-height:400px;}
+        .map-info{position:absolute;top:16px;right:16px;background:rgba(8,12,20,0.85);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:12px;z-index:500;min-width:160px;}
+        .map-info .mi-label{color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.7px;margin-bottom:4px;}
+        .map-info .mi-val{font-weight:700;font-size:14px;color:var(--accent);}
+        .waiting-hint{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);gap:10px;font-size:13px;}
+        .waiting-hint .icon{font-size:48px;opacity:0.2;}
+    </style>
+</head>
+<body>
+
+<nav class="sidebar">
+    <div class="logo">🚗</div>
+    <a href="/"      class="nav-link"        title="Dashboard">🏠</a>
+    <a href="/data"  class="nav-link"         title="Ride Data">📋</a>
+    <a href="/stats" class="nav-link"         title="Statistics">📈</a>
+    <a href="/book"  class="nav-link active"  title="Book a Ride">🚖</a>
+    <a href="/driver" class="nav-link"        title="Driver Panel">🧑‍✈️</a>
+    <a href="/admin" class="nav-link"         title="Admin Portal">🔐</a>
+</nav>
+
+<div class="main">
+    <header class="topbar">
+        <div class="topbar-left">
+            <h1>Book a Ride</h1>
+            <span>Select your pickup and drop location</span>
+        </div>
+    </header>
+
+    <div class="page-body">
+        <!-- Form -->
+        <div class="form-pane">
+
+            {% if success %}
+            <!-- SUCCESS STATE -->
+            <div class="success-card">
+                <div class="check">✅</div>
+                <h2>Ride Requested!</h2>
+                <div class="ride-id-badge">#{{ success.id }}</div>
+                <div class="row"><span class="k">Passenger</span><span class="v">{{ success.passenger }}</span></div>
+                <div class="row"><span class="k">Pickup</span><span class="v">{{ success.pickup }}</span></div>
+                <div class="row"><span class="k">Drop</span><span class="v">{{ success.drop }}</span></div>
+                <div class="row"><span class="k">Distance</span><span class="v">{{ success.distance }} km</span></div>
+                <div class="row"><span class="k">Est. Fare</span><span class="v">₹{{ success.est_fare }}</span></div>
+                <div class="row" style="border:none"><span class="k">Status</span><span class="v" style="color:var(--accent3)">⏳ Waiting for driver</span></div>
+                <a href="/book" class="book-again">+ Book another ride</a>
+                <a href="/driver" class="book-again" style="color:var(--accent)">→ Go to Driver Panel to accept</a>
+            </div>
+
+            {% else %}
+            <!-- BOOKING FORM -->
+            {% if error %}
+            <div class="err-box" style="margin-bottom:16px;">⚠️ {{ error }}</div>
+            {% endif %}
+
+            <form class="form-card" method="POST" action="/book">
+                <div>
+                    <label for="passenger">Your Name</label>
+                    <input type="text" id="passenger" name="passenger" placeholder="Enter your name" required />
+                </div>
+                <div>
+                    <label for="pickup">Pickup Location</label>
+                    <select id="pickup" name="pickup" required onchange="updateRoute()">
+                        <option value="" disabled selected>Select pickup…</option>
+                        {% for loc in locations %}
+                        <option value="{{ loc }}">{{ loc }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="drop">Drop Location</label>
+                    <select id="drop" name="drop" required onchange="updateRoute()">
+                        <option value="" disabled selected>Select drop…</option>
+                        {% for loc in locations %}
+                        <option value="{{ loc }}">{{ loc }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Live estimate -->
+                <div class="estimate-box" id="estimate-box" style="display:none">
+                    <div class="est-item">
+                        <div class="lbl">Est. Distance</div>
+                        <div class="val" id="est-dist">—</div>
+                    </div>
+                    <div class="est-item">
+                        <div class="lbl">Est. Fare</div>
+                        <div class="val" id="est-fare">—</div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">🚖 Request Ride</button>
+            </form>
+            {% endif %}
+        </div>
+
+        <!-- Map -->
+        <div class="map-pane">
+            {% if success %}
+            <div id="book-map"></div>
+            {% else %}
+            <div id="book-map">
+                <div class="waiting-hint">
+                    <div class="icon">🗺️</div>
+                    <div>Select pickup & drop to see the route</div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Location data from Flask
+    const LOCS = {{ locations | tojson }};
+
+    let mapInst = null;
+    let routeLayer = null;
+
+    function initMap(center) {
+        if (mapInst) return;
+        document.getElementById('book-map').innerHTML = '';
+        mapInst = L.map('book-map', { zoomControl: true }).setView(center, 12);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap © CartoDB', subdomains: 'abcd', maxZoom: 19
+        }).addTo(mapInst);
+    }
+
+    function haversine(lat1, lon1, lat2, lon2) {
+        const R = 6371, r = Math.PI / 180;
+        const dLat = (lat2 - lat1) * r, dLon = (lon2 - lon1) * r;
+        const a = Math.sin(dLat/2)**2 + Math.cos(lat1*r)*Math.cos(lat2*r)*Math.sin(dLon/2)**2;
+        return +(R * 2 * Math.asin(Math.sqrt(a))).toFixed(1);
+    }
+
+    async function updateRoute() {
+        const pickupName = document.getElementById('pickup').value;
+        const dropName   = document.getElementById('drop').value;
+        if (!pickupName || !dropName || pickupName === dropName) return;
+
+        const pc = LOCS[pickupName].coords;
+        const dc = LOCS[dropName].coords;
+        const dist = haversine(pc[0], pc[1], dc[0], dc[1]);
+        const fare = (30 + dist * 18).toFixed(2);
+
+        // Show estimate
+        document.getElementById('est-dist').textContent = dist + ' km';
+        document.getElementById('est-fare').textContent = '₹' + fare;
+        document.getElementById('estimate-box').style.display = 'grid';
+
+        // Init map centred between the two points
+        const center = [(pc[0]+dc[0])/2, (pc[1]+dc[1])/2];
+        initMap(center);
+
+        // Clear old route
+        if (routeLayer) { mapInst.removeLayer(routeLayer); routeLayer = null; }
+
+        const greenIcon = L.divIcon({ className:'', html:'<div style="width:13px;height:13px;border-radius:50%;background:#06d6a0;border:3px solid #fff;box-shadow:0 0 10px #06d6a0"></div>' });
+        const redIcon   = L.divIcon({ className:'', html:'<div style="width:13px;height:13px;border-radius:50%;background:#ef4444;border:3px solid #fff;box-shadow:0 0 10px #ef4444"></div>' });
+        mapInst.eachLayer(l => { if (l instanceof L.Marker || l instanceof L.Polyline) mapInst.removeLayer(l); });
+
+        L.marker(pc, { icon: greenIcon }).addTo(mapInst).bindPopup(`<b>${pickupName}</b>`);
+        L.marker(dc, { icon: redIcon   }).addTo(mapInst).bindPopup(`<b>${dropName}</b>`);
+
+        // Fetch OSRM route
+        try {
+            const url = `https://router.project-osrm.org/route/v1/driving/${pc[1]},${pc[0]};${dc[1]},${dc[0]}?overview=full&geometries=geojson`;
+            const data = await fetch(url).then(r => r.json());
+            if (data.routes?.[0]) {
+                const coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                L.polyline(coords, { color:'#3b82f6', weight:12, opacity:0.15 }).addTo(mapInst);
+                routeLayer = L.polyline(coords, { color:'#3b82f6', weight:4, opacity:0.9 }).addTo(mapInst);
+                mapInst.fitBounds(routeLayer.getBounds(), { padding:[30,30] });
+            }
+        } catch {
+            routeLayer = L.polyline([pc, dc], { color:'#3b82f6', weight:4 }).addTo(mapInst);
+            mapInst.fitBounds(routeLayer.getBounds(), { padding:[40,40] });
+        }
+    }
+
+    {% if success %}
+    // Show success map
+    (function() {
+        const pc = {{ success.pickup_coords | tojson }};
+        const dc = {{ success.drop_coords   | tojson }};
+        initMap([(pc[0]+dc[0])/2, (pc[1]+dc[1])/2]);
+        const greenIcon = L.divIcon({ className:'', html:'<div style="width:13px;height:13px;border-radius:50%;background:#06d6a0;border:3px solid #fff;box-shadow:0 0 10px #06d6a0"></div>' });
+        const redIcon   = L.divIcon({ className:'', html:'<div style="width:13px;height:13px;border-radius:50%;background:#ef4444;border:3px solid #fff;box-shadow:0 0 10px #ef4444"></div>' });
+        L.marker(pc, { icon: greenIcon }).addTo(mapInst).bindPopup('Pickup');
+        L.marker(dc, { icon: redIcon   }).addTo(mapInst).bindPopup('Drop');
+        fetch(`https://router.project-osrm.org/route/v1/driving/${pc[1]},${pc[0]};${dc[1]},${dc[0]}?overview=full&geometries=geojson`)
+            .then(r => r.json()).then(data => {
+                if (data.routes?.[0]) {
+                    const coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                    L.polyline(coords, { color:'#3b82f6', weight:12, opacity:0.15 }).addTo(mapInst);
+                    const line = L.polyline(coords, { color:'#3b82f6', weight:4, opacity:0.9 }).addTo(mapInst);
+                    mapInst.fitBounds(line.getBounds(), { padding:[30,30] });
+                }
+            }).catch(() => {});
+    })();
+    {% endif %}
+</script>
+</body>
+</html>

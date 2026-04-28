@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RideSync · Admin Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root{--bg:#080c14;--surface:#0e1420;--surface2:#141c2e;--border:rgba(255,255,255,0.06);--accent:#3b82f6;--accent2:#06d6a0;--accent3:#f59e0b;--purple:#a855f7;--danger:#ef4444;--text:#f0f4ff;--muted:#6b7a99;--radius:16px;--nav-w:72px;--transition:0.3s cubic-bezier(0.4,0,0.2,1);}
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;}
+        .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--nav-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:20px 0;z-index:100;gap:8px;}
+        .logo{width:42px;height:42px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:24px;box-shadow:0 0 20px rgba(59,130,246,0.4);}
+        .nav-link{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none;color:var(--muted);transition:var(--transition);position:relative;}
+        .nav-link:hover,.nav-link.active{background:rgba(59,130,246,0.15);color:var(--accent);}
+        .nav-link.active::before{content:'';position:absolute;left:-1px;width:3px;height:24px;background:var(--accent);border-radius:0 4px 4px 0;}
+        .nav-link[title]:hover::after{content:attr(title);position:absolute;left:60px;background:var(--surface2);color:var(--text);font-size:12px;font-weight:500;padding:4px 10px;border-radius:8px;white-space:nowrap;border:1px solid var(--border);pointer-events:none;}
+        .main{margin-left:var(--nav-w);flex:1;display:flex;flex-direction:column;overflow-y:auto;}
+        .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--surface);}
+        .topbar-left h1{font-size:18px;font-weight:700;}
+        .topbar-left span{font-size:13px;color:var(--muted);}
+        .admin-badge{background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.3);color:var(--purple);font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px;}
+
+        /* Tabs */
+        .tab-bar{display:flex;border-bottom:1px solid var(--border);background:var(--surface);padding:0 28px;}
+        .tab{padding:14px 20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:var(--transition);user-select:none;}
+        .tab:hover{color:var(--text);}
+        .tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+        .tab-content{display:none;padding:24px 28px;}
+        .tab-content.active{display:block;}
+
+        /* KPI strip */
+        .kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px;}
+        .kpi-tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden;}
+        .kpi-tile::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;}
+        .kpi-tile:nth-child(1)::after{background:linear-gradient(90deg,var(--accent),transparent);}
+        .kpi-tile:nth-child(2)::after{background:linear-gradient(90deg,var(--accent2),transparent);}
+        .kpi-tile:nth-child(3)::after{background:linear-gradient(90deg,var(--accent3),transparent);}
+        .kpi-tile:nth-child(4)::after{background:linear-gradient(90deg,var(--purple),transparent);}
+        .kpi-tile:nth-child(5)::after{background:linear-gradient(90deg,var(--danger),transparent);}
+        .kpi-tile:nth-child(6)::after{background:linear-gradient(90deg,#06d6a0,transparent);}
+        .kpi-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:6px;}
+        .kpi-val{font-size:20px;font-weight:800;letter-spacing:-0.3px;}
+        .kpi-tile:nth-child(1) .kpi-val{color:var(--accent);}
+        .kpi-tile:nth-child(2) .kpi-val{color:var(--accent2);}
+        .kpi-tile:nth-child(3) .kpi-val{color:var(--accent3);}
+        .kpi-tile:nth-child(4) .kpi-val{color:var(--purple);}
+        .kpi-tile:nth-child(5) .kpi-val{color:var(--danger);}
+        .kpi-tile:nth-child(6) .kpi-val{color:var(--accent2);}
+
+        /* Charts row */
+        .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+        .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+        .chart-card h3{font-size:13px;font-weight:700;margin-bottom:14px;}
+        .chart-wrap{height:200px;position:relative;}
+
+        /* Table */
+        .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+        .table-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);}
+        .table-head h3{font-size:13px;font-weight:700;}
+        .table-count{font-size:11px;font-weight:600;color:var(--muted);}
+        table{width:100%;border-collapse:collapse;}
+        thead th{padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--muted);border-bottom:1px solid var(--border);}
+        tbody tr{border-bottom:1px solid var(--border);transition:background var(--transition);}
+        tbody tr:hover{background:var(--surface2);}
+        td{padding:12px 16px;font-size:13px;}
+        .td-bold{font-weight:600;}
+        .fare-pill{display:inline-block;background:rgba(6,214,160,0.1);border:1px solid rgba(6,214,160,0.25);color:var(--accent2);font-weight:700;font-size:12px;padding:2px 8px;border-radius:6px;}
+        .dist-pill{display:inline-block;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);color:var(--accent3);font-weight:600;font-size:12px;padding:2px 8px;border-radius:6px;}
+        .pending-badge{display:inline-block;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:var(--accent3);font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;}
+
+        /* Driver cards grid */
+        .driver-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
+        .driver-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;}
+        .driver-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 12px;}
+        .driver-name{font-size:14px;font-weight:700;margin-bottom:4px;}
+        .driver-stat{font-size:11px;color:var(--muted);}
+        .driver-revenue{font-size:16px;font-weight:800;color:var(--accent2);margin-top:8px;}
+    </style>
+</head>
+<body>
+
+<nav class="sidebar">
+    <div class="logo">🚗</div>
+    <a href="/"       class="nav-link"        title="Dashboard">🏠</a>
+    <a href="/data"   class="nav-link"         title="Ride Data">📋</a>
+    <a href="/stats"  class="nav-link"         title="Statistics">📈</a>
+    <a href="/book"   class="nav-link"         title="Book a Ride">🚖</a>
+    <a href="/driver" class="nav-link"         title="Driver Panel">🧑‍✈️</a>
+    <a href="/admin"  class="nav-link active"  title="Admin Portal">🔐</a>
+</nav>
+
+<div class="main">
+    <header class="topbar">
+        <div class="topbar-left">
+            <h1>Admin Portal</h1>
+            <span>Full system overview</span>
+        </div>
+        <div class="admin-badge">🔐 Admin</div>
+    </header>
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+        <div class="tab active" onclick="switchTab('overview')">Overview</div>
+        <div class="tab" onclick="switchTab('rides')">All Rides</div>
+        <div class="tab" onclick="switchTab('pending')">Pending <span id="pending-count-tab" style="background:rgba(245,158,11,0.15);color:var(--accent3);border-radius:10px;padding:1px 7px;font-size:10px;margin-left:4px;">{{ pending | length }}</span></div>
+        <div class="tab" onclick="switchTab('drivers')">Drivers</div>
+    </div>
+
+    <!-- Overview Tab -->
+    <div class="tab-content active" id="tab-overview">
+        <!-- KPI Strip -->
+        <div class="kpi-grid">
+            <div class="kpi-tile"><div class="kpi-label">Total Rides</div><div class="kpi-val" data-target="{{ total_rides }}">0</div></div>
+            <div class="kpi-tile"><div class="kpi-label">Revenue</div><div class="kpi-val" data-target="{{ total_revenue }}" data-prefix="₹">₹0</div></div>
+            <div class="kpi-tile"><div class="kpi-label">Avg Fare</div><div class="kpi-val" data-target="{{ avg_fare }}" data-prefix="₹">₹0</div></div>
+            <div class="kpi-tile"><div class="kpi-label">Distance</div><div class="kpi-val" data-target="{{ total_distance }}" data-suffix=" km">0 km</div></div>
+            <div class="kpi-tile"><div class="kpi-label">Pending</div><div class="kpi-val" data-target="{{ pending | length }}">0</div></div>
+            <div class="kpi-tile"><div class="kpi-label">Active Drivers</div><div class="kpi-val" data-target="{{ unique_drivers }}">0</div></div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-row">
+            <div class="chart-card">
+                <h3>Fare per Ride</h3>
+                <div class="chart-wrap"><canvas id="fareChart"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h3>Rides by Driver</h3>
+                <div class="chart-wrap"><canvas id="driverChart"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Recent 5 rides -->
+        <div class="table-wrap">
+            <div class="table-head">
+                <h3>Recent Rides</h3>
+                <span class="table-count">Last 5</span>
+            </div>
+            <table>
+                <thead><tr><th>Passenger</th><th>Driver</th><th>Route</th><th>Distance</th><th>Fare</th></tr></thead>
+                <tbody>
+                    {% for ride in rides[-5:]|reverse %}
+                    <tr>
+                        <td class="td-bold">{{ ride.passenger }}</td>
+                        <td style="color:var(--muted)">{{ ride.driver }}</td>
+                        <td style="color:var(--muted)">{{ ride.pickup }} → {{ ride.drop }}</td>
+                        <td><span class="dist-pill">{{ ride.distance }} km</span></td>
+                        <td><span class="fare-pill">₹{{ ride.fare }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- All Rides Tab -->
+    <div class="tab-content" id="tab-rides">
+        <div class="table-wrap">
+            <div class="table-head">
+                <h3>All Rides</h3>
+                <span class="table-count">{{ total_rides }} total</span>
+            </div>
+            <table>
+                <thead><tr><th>#</th><th>Passenger</th><th>Driver</th><th>Pickup</th><th>Drop</th><th>Distance</th><th>Fare</th></tr></thead>
+                <tbody>
+                    {% for ride in rides %}
+                    <tr>
+                        <td style="color:var(--muted)">{{ loop.index }}</td>
+                        <td class="td-bold">{{ ride.passenger }}</td>
+                        <td style="color:var(--muted)">{{ ride.driver }}</td>
+                        <td>{{ ride.pickup }}</td>
+                        <td>{{ ride.drop }}</td>
+                        <td><span class="dist-pill">{{ ride.distance }} km</span></td>
+                        <td><span class="fare-pill">₹{{ ride.fare }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pending Tab -->
+    <div class="tab-content" id="tab-pending">
+        <div class="table-wrap">
+            <div class="table-head">
+                <h3>Pending Rides</h3>
+                <span class="table-count">{{ pending | length }} awaiting driver</span>
+            </div>
+            <table>
+                <thead><tr><th>ID</th><th>Passenger</th><th>Pickup</th><th>Drop</th><th>Distance</th><th>Est. Fare</th><th>Requested At</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% if pending %}
+                        {% for r in pending %}
+                        <tr>
+                            <td style="color:var(--muted);font-size:11px;font-family:monospace">#{{ r.id }}</td>
+                            <td class="td-bold">{{ r.passenger }}</td>
+                            <td>{{ r.pickup }}</td>
+                            <td>{{ r.drop }}</td>
+                            <td><span class="dist-pill">{{ r.distance }} km</span></td>
+                            <td><span class="fare-pill">₹{{ r.est_fare }}</span></td>
+                            <td style="color:var(--muted)">{{ r.timestamp }}</td>
+                            <td><span class="pending-badge">⏳ Pending</span></td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted)">No pending rides</td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Drivers Tab -->
+    <div class="tab-content" id="tab-drivers">
+        <div class="driver-grid">
+            {% set driver_data = {} %}
+            {% for ride in rides %}
+                {% if ride.driver in driver_data %}
+                    {% set _ = driver_data.update({ride.driver: {'rides': driver_data[ride.driver]['rides'] + 1, 'revenue': driver_data[ride.driver]['revenue'] + ride.fare}}) %}
+                {% else %}
+                    {% set _ = driver_data.update({ride.driver: {'rides': 1, 'revenue': ride.fare}}) %}
+                {% endif %}
+            {% endfor %}
+
+            {% set emojis = ['🧑‍✈️', '👨‍✈️', '👩‍✈️', '🚗', '🛻'] %}
+            {% for name, info in driver_data.items() %}
+            <div class="driver-card">
+                <div class="driver-avatar">{{ emojis[loop.index0 % emojis|length] }}</div>
+                <div class="driver-name">{{ name }}</div>
+                <div class="driver-stat">{{ info.rides }} ride{{ 's' if info.rides != 1 }}</div>
+                <div class="driver-revenue">₹{{ "%.2f"|format(info.revenue) }}</div>
+            </div>
+            {% endfor %}
+
+            {% if not driver_data %}
+            <div style="color:var(--muted);font-size:13px;padding:40px">No driver data yet.</div>
+            {% endif %}
+        </div>
+    </div>
+
+</div><!-- /main -->
+
+<script>
+    Chart.defaults.color = '#6b7a99';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+    Chart.defaults.font.family = 'Inter';
+
+    // Count-up
+    document.querySelectorAll('.kpi-val[data-target]').forEach(el => {
+        const target = parseFloat(el.dataset.target) || 0;
+        const prefix = el.dataset.prefix || '';
+        const suffix = el.dataset.suffix || '';
+        const isFloat = String(target).includes('.');
+        const start = performance.now();
+        function tick(now) {
+            const t = Math.min((now-start)/900, 1);
+            const ease = 1 - Math.pow(1-t, 3);
+            el.textContent = prefix + (isFloat ? (target*ease).toFixed(2) : Math.round(target*ease)) + suffix;
+            if (t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+    });
+
+    // Charts
+    const rides = {{ rides | tojson }};
+    if (rides.length) {
+        // Fare bar
+        const fareCtx = document.getElementById('fareChart').getContext('2d');
+        const g1 = fareCtx.createLinearGradient(0,0,0,200);
+        g1.addColorStop(0,'rgba(59,130,246,0.8)'); g1.addColorStop(1,'rgba(59,130,246,0.1)');
+        new Chart(fareCtx, {
+            type:'bar',
+            data:{ labels: rides.map((_,i)=>`R${i+1}`), datasets:[{label:'Fare (₹)',data:rides.map(r=>r.fare),backgroundColor:g1,borderColor:'#3b82f6',borderWidth:2,borderRadius:6,borderSkipped:false}] },
+            options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{callback:v=>'₹'+v}}} }
+        });
+
+        // Driver doughnut
+        const driverCounts = {};
+        rides.forEach(r => { driverCounts[r.driver] = (driverCounts[r.driver]||0)+1; });
+        new Chart(document.getElementById('driverChart'), {
+            type:'doughnut',
+            data:{ labels:Object.keys(driverCounts), datasets:[{data:Object.values(driverCounts),backgroundColor:['#3b82f6','#06d6a0','#f59e0b','#a855f7','#ef4444'],borderWidth:0,hoverOffset:6}] },
+            options:{ responsive:true, maintainAspectRatio:false, cutout:'60%', plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true,pointStyle:'circle'}}} }
+        });
+    }
+
+    // Tab switching
+    function switchTab(name) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelector(`[onclick="switchTab('${name}')"]`).classList.add('active');
+        document.getElementById('tab-'+name).classList.add('active');
+    }
+</script>
+</body>
+</html>

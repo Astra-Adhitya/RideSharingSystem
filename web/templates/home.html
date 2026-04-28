@@ -1,181 +1,561 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Ride Dashboard</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RideSync · Dashboard</title>
+    <meta name="description" content="RideSync live dashboard — real-time ride tracking, earnings, and fleet overview." />
 
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
     <style>
+        /* ── Design Tokens ──────────────────────────────────────────── */
+        :root {
+            --bg:         #080c14;
+            --surface:    #0e1420;
+            --surface2:   #141c2e;
+            --border:     rgba(255,255,255,0.06);
+            --accent:     #3b82f6;
+            --accent2:    #06d6a0;
+            --accent3:    #f59e0b;
+            --danger:     #ef4444;
+            --text:       #f0f4ff;
+            --muted:      #6b7a99;
+            --radius:     16px;
+            --nav-w:      72px;
+            --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        /* ── Reset ──────────────────────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0b0b0b;
-            color: white;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Sidebar Nav ────────────────────────────────────────────── */
+        .sidebar {
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            width: var(--nav-w);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            z-index: 100;
+            gap: 8px;
+        }
+
+        .logo {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 0 20px rgba(59,130,246,0.4);
+        }
+
+        .nav-link {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            text-decoration: none;
+            color: var(--muted);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(59,130,246,0.15);
+            color: var(--accent);
+        }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: -1px;
+            width: 3px; height: 24px;
+            background: var(--accent);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .nav-link[title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            left: 60px;
+            background: var(--surface2);
+            color: var(--text);
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 8px;
+            white-space: nowrap;
+            border: 1px solid var(--border);
+            pointer-events: none;
+        }
+
+        /* ── Main Content ───────────────────────────────────────────── */
+        .main {
+            margin-left: var(--nav-w);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ── Top Bar ────────────────────────────────────────────────── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 28px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            flex-shrink: 0;
+        }
+
+        .topbar-left h1 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .topbar-left span {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(6,214,160,0.12);
+            border: 1px solid rgba(6,214,160,0.3);
+            color: var(--accent2);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+
+        .live-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--accent2);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%       { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        /* ── Content Body ───────────────────────────────────────────── */
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            grid-template-rows: auto 1fr;
+            gap: 0;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ── KPI Strip ──────────────────────────────────────────────── */
+        .kpi-strip {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .kpi-card {
+            background: var(--surface);
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+            overflow: hidden;
+            transition: background var(--transition);
+        }
+
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2px;
+        }
+
+        .kpi-card:nth-child(1)::after { background: linear-gradient(90deg, var(--accent), transparent); }
+        .kpi-card:nth-child(2)::after { background: linear-gradient(90deg, var(--accent2), transparent); }
+        .kpi-card:nth-child(3)::after { background: linear-gradient(90deg, var(--accent3), transparent); }
+        .kpi-card:nth-child(4)::after { background: linear-gradient(90deg, #a855f7, transparent); }
+
+        .kpi-card:hover { background: var(--surface2); }
+
+        .kpi-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+
+        .kpi-card:nth-child(1) .kpi-value { color: var(--accent); }
+        .kpi-card:nth-child(2) .kpi-value { color: var(--accent2); }
+        .kpi-card:nth-child(3) .kpi-value { color: var(--accent3); }
+        .kpi-card:nth-child(4) .kpi-value { color: #a855f7; }
+
+        .kpi-icon {
+            position: absolute;
+            right: 20px; top: 50%;
+            transform: translateY(-50%);
+            font-size: 32px;
+            opacity: 0.08;
+        }
+
+        /* ── Map ────────────────────────────────────────────────────── */
+        .map-pane {
+            position: relative;
+            overflow: hidden;
         }
 
         #map {
-            height: 55vh;
             width: 100%;
+            height: 100%;
+            min-height: 300px;
         }
 
-        .panel {
-            background: #111;
+        .map-overlay {
+            position: absolute;
+            bottom: 16px; left: 16px;
+            background: rgba(8,12,20,0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            font-size: 13px;
+            z-index: 500;
+        }
+
+        .map-overlay .route-label {
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .map-overlay .route-sub {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* ── Side Panel ─────────────────────────────────────────────── */
+        .side-panel {
+            background: var(--surface);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-header {
             padding: 20px;
-            border-radius: 20px 20px 0 0;
-            margin-top: -20px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
         }
 
-        h1 {
-            padding: 10px;
-            font-size: 20px;
+        .panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .status {
-            background: #1c1c1c;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            color: #00ffae;
-            font-weight: bold;
+        .panel-body::-webkit-scrollbar { width: 4px; }
+        .panel-body::-webkit-scrollbar-track { background: transparent; }
+        .panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        /* ── Ride Feed Card ─────────────────────────────────────────── */
+        .ride-card {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            transition: var(--transition);
+            animation: slideIn 0.4s ease both;
         }
 
-        .driver-card {
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(16px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .ride-card:hover {
+            border-color: rgba(59,130,246,0.3);
+            box-shadow: 0 0 20px rgba(59,130,246,0.08);
+        }
+
+        .ride-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .ride-names {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .ride-names .driver { color: var(--muted); font-weight: 400; font-size: 11px; }
+
+        .fare-badge {
+            background: rgba(6,214,160,0.12);
+            border: 1px solid rgba(6,214,160,0.25);
+            color: var(--accent2);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .ride-route {
             display: flex;
             align-items: center;
-            background: #1c1c1c;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--muted);
         }
 
-        .driver-card img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            margin-right: 15px;
-        }
+        .route-arrow { color: var(--accent); }
 
-        .driver-info {
-            flex: 1;
-        }
-
-        .driver-info h3 {
-            margin: 0;
-        }
-
-        .driver-info p {
-            margin: 2px 0;
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        .cards {
+        .ride-meta {
+            margin-top: 8px;
             display: flex;
-            gap: 15px;
+            gap: 10px;
+            font-size: 11px;
+            color: var(--muted);
         }
 
-        .card {
+        .ride-meta span { display: flex; align-items: center; gap: 3px; }
+
+        /* ── Empty State ────────────────────────────────────────────── */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             flex: 1;
-            background: #1c1c1c;
-            padding: 15px;
-            border-radius: 12px;
+            color: var(--muted);
+            font-size: 13px;
+            gap: 8px;
+            padding: 40px;
+            text-align: center;
         }
 
-        .title {
-            font-size: 14px;
-            color: #aaa;
-        }
-
-        .value {
-            font-size: 22px;
-            margin-top: 5px;
-            font-weight: bold;
-        }
-
-        a {
-            color: #00d4ff;
-            margin-right: 15px;
-            text-decoration: none;
-        }
+        .empty-state .icon { font-size: 40px; opacity: 0.3; }
     </style>
 </head>
-
 <body>
 
-<h1>🚗 Ride Dashboard</h1>
+<!-- ── Sidebar ──────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+    <div class="logo">🚗</div>
+    <a href="/"      class="nav-link active" title="Dashboard">🏠</a>
+    <a href="/data"  class="nav-link"        title="Ride Data">📋</a>
+    <a href="/stats" class="nav-link"        title="Statistics">📈</a>
+    <a href="/book"  class="nav-link"        title="Book a Ride">🚖</a>
+    <a href="/driver" class="nav-link"       title="Driver Panel">🧑‍✈️</a>
+    <a href="/admin" class="nav-link"        title="Admin Portal">🔐</a>
+</nav>
 
-<div id="map"></div>
+<!-- ── Main ─────────────────────────────────────────────────────────────── -->
+<div class="main">
 
-<div class="panel">
-
-    <div class="status">
-        🚖 Driver has accepted your ride
-    </div>
-
-    <div class="driver-card">
-        <img src="https://randomuser.me/api/portraits/men/32.jpg">
-        <div class="driver-info">
-            <h3>Rahul Sharma ⭐ 4.8</h3>
-            <p>Car: Swift Dzire (KA 05 AB 1234)</p>
-            <p style="color:#00ffae;">🚗 Ride in progress</p>
+    <!-- Top bar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <h1>RideSync Dashboard</h1>
+            <span>Live fleet overview</span>
         </div>
-    </div>
+        <div class="live-badge">
+            <div class="live-dot"></div>
+            LIVE
+        </div>
+    </header>
 
-    <div class="cards">
-        <div class="card">
-            <div class="title">Active Rides</div>
-            <div class="value">{{ total_rides }}</div>
+    <!-- Content grid -->
+    <div class="content">
+
+        <!-- KPI Strip -->
+        <div class="kpi-strip">
+            <div class="kpi-card">
+                <div class="kpi-label">Total Rides</div>
+                <div class="kpi-value" data-target="{{ total_rides }}">0</div>
+                <div class="kpi-icon">🚗</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Total Revenue</div>
+                <div class="kpi-value" data-target="{{ total_revenue }}" data-prefix="₹">₹0</div>
+                <div class="kpi-icon">💰</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Avg Fare</div>
+                <div class="kpi-value" data-target="{{ avg_fare }}" data-prefix="₹">₹0</div>
+                <div class="kpi-icon">🎯</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Total Distance</div>
+                <div class="kpi-value" data-target="{{ total_distance }}" data-suffix=" km">0 km</div>
+                <div class="kpi-icon">📍</div>
+            </div>
         </div>
 
-        <div class="card">
-            <div class="title">Earnings</div>
-            <div class="value">₹ {{ total_revenue }}</div>
+        <!-- Map pane -->
+        <div class="map-pane">
+            <div id="map"></div>
+            <div class="map-overlay">
+                <div class="route-label">🚖 Active Route</div>
+                <div class="route-sub">Bengaluru City · ETA 4 min</div>
+            </div>
         </div>
-    </div>
 
-    <div style="margin-top:15px;">
-        <a href="/data">View Data</a>
-        <a href="/stats">View Stats</a>
-    </div>
-</div>
+        <!-- Side panel — recent rides -->
+        <aside class="side-panel">
+            <div class="panel-header">Recent Rides</div>
+            <div class="panel-body" id="ride-feed">
+                {% if recent_rides %}
+                    {% for ride in recent_rides %}
+                    <div class="ride-card" style="animation-delay: {{ loop.index0 * 0.07 }}s">
+                        <div class="ride-card-top">
+                            <div class="ride-names">
+                                {{ ride.passenger }}
+                                <div class="driver">🧑‍✈️ {{ ride.driver }}</div>
+                            </div>
+                            <div class="fare-badge">₹{{ ride.fare }}</div>
+                        </div>
+                        <div class="ride-route">
+                            <span>{{ ride.pickup }}</span>
+                            <span class="route-arrow">→</span>
+                            <span>{{ ride.drop }}</span>
+                        </div>
+                        <div class="ride-meta">
+                            <span>📏 {{ ride.distance }} km</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="icon">🚦</div>
+                        No rides recorded yet
+                    </div>
+                {% endif %}
+            </div>
+        </aside>
+
+    </div><!-- /content -->
+</div><!-- /main -->
 
 <script>
-    var map = L.map('map').setView([12.9716, 77.5946], 13);
+    /* ── Count-up animation ─────────────────────────────────────── */
+    document.querySelectorAll('.kpi-value[data-target]').forEach(el => {
+        const target = parseFloat(el.dataset.target) || 0;
+        const prefix = el.dataset.prefix || '';
+        const suffix = el.dataset.suffix || '';
+        const isFloat = String(target).includes('.');
+        const duration = 1000;
+        const start = performance.now();
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    var path = [
-        [12.9716, 77.5946],
-        [12.975, 77.60],
-        [12.98, 77.61],
-        [12.985, 77.62]
-    ];
-
-    L.polyline(path, {color: 'cyan'}).addTo(map);
-
-    L.marker(path[0]).addTo(map).bindPopup("Pickup").openPopup();
-    L.marker(path[path.length - 1]).addTo(map).bindPopup("Drop");
-
-    var carIcon = L.icon({
-        iconUrl: "https://cdn-icons-png.flaticon.com/512/744/744465.png",
-        iconSize: [40, 40]
+        function update(now) {
+            const t = Math.min((now - start) / duration, 1);
+            const ease = 1 - Math.pow(1 - t, 3);
+            const val = target * ease;
+            el.textContent = prefix + (isFloat ? val.toFixed(2) : Math.round(val)) + suffix;
+            if (t < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
     });
 
-    var car = L.marker(path[0], {icon: carIcon}).addTo(map);
+    /* ── Leaflet Map ────────────────────────────────────────────── */
+    const PICKUP = [12.9279, 77.6271]; // Koramangala
+    const DROP   = [12.9784, 77.6408]; // Indiranagar
 
-    var i = 0;
+    const map = L.map('map', { zoomControl: false }).setView([
+        (PICKUP[0]+DROP[0])/2, (PICKUP[1]+DROP[1])/2
+    ], 13);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
 
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap © CartoDB',
+        subdomains: 'abcd', maxZoom: 19
+    }).addTo(map);
+
+    const greenIcon = L.divIcon({ className: '', html: '<div style="width:14px;height:14px;border-radius:50%;background:#06d6a0;border:3px solid #fff;box-shadow:0 0 12px #06d6a0"></div>' });
+    const redIcon   = L.divIcon({ className: '', html: '<div style="width:14px;height:14px;border-radius:50%;background:#ef4444;border:3px solid #fff;box-shadow:0 0 12px #ef4444"></div>' });
+    const carIcon   = L.divIcon({ className: '', html: '<div style="font-size:28px;filter:drop-shadow(0 0 8px #3b82f6)">🚗</div>', iconAnchor:[14,14] });
+
+    L.marker(PICKUP, { icon: greenIcon }).addTo(map).bindPopup('<b>Koramangala</b> (Pickup)');
+    L.marker(DROP,   { icon: redIcon   }).addTo(map).bindPopup('<b>Indiranagar</b> (Drop)');
+
+    const car = L.marker(PICKUP, { icon: carIcon }).addTo(map);
+    let routeCoords = [];
+    let carIdx = 0;
+
+    // Fetch real road route from OSRM
+    fetch(`https://router.project-osrm.org/route/v1/driving/${PICKUP[1]},${PICKUP[0]};${DROP[1]},${DROP[0]}?overview=full&geometries=geojson`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.routes?.[0]) {
+                routeCoords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                L.polyline(routeCoords, { color: '#3b82f6', weight: 12, opacity: 0.15 }).addTo(map);
+                L.polyline(routeCoords, { color: '#3b82f6', weight: 4,  opacity: 0.9  }).addTo(map);
+                map.fitBounds(L.polyline(routeCoords).getBounds(), { padding: [30, 30] });
+            }
+        })
+        .catch(() => {
+            // Fallback straight line
+            routeCoords = [PICKUP, DROP];
+            L.polyline(routeCoords, { color: '#3b82f6', weight: 4 }).addTo(map);
+        });
+
+    // Animate car along route
     setInterval(() => {
-        if (i < path.length) {
-            car.setLatLng(path[i]);
-            i++;
-        } else {
-            i = 0;
+        if (routeCoords.length > 1) {
+            car.setLatLng(routeCoords[carIdx % routeCoords.length]);
+            carIdx++;
         }
-    }, 1500);
+    }, 80);
 </script>
 
 </body>
